@@ -1,0 +1,1412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TrackNxt | Skilling Outcomes & Impact Measurement</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root {
+      --sidebar-bg: #0C1A30;
+      --sidebar-hover: #162947;
+      --sidebar-active: #1D58D8;
+      --sidebar-text: #94A3B8;
+      --sidebar-text-bright: #FFFFFF;
+
+      --body-bg: #F4F7FB;
+      --card-bg: #FFFFFF;
+      --card-border: #E2E8F0;
+      
+      --text-main: #0F172A;
+      --text-muted: #64748B;
+      --text-light: #94A3B8;
+
+      --blue-primary: #1E60F2;
+      --green: #10B981;
+      --purple: #8B5CF6;
+      --amber: #F59E0B;
+      --teal: #06B6D4;
+      --coral: #EF4444;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+    
+    /* Removed the double scrollbar: lock viewport and scroll only the main content area */
+    html, body {
+      height: 100vh;
+      overflow: hidden;
+      background-color: var(--body-bg);
+      color: var(--text-main);
+      display: flex;
+    }
+
+    /* ================= SIDEBAR ================= */
+    aside {
+      width: 260px;
+      min-width: 260px;
+      height: 100vh;
+      background: var(--sidebar-bg);
+      color: var(--sidebar-text);
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid rgba(255, 255, 255, 0.06);
+      flex-shrink: 0;
+    }
+
+    .sidebar-brand {
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .brand-logo-wrap {
+      width: 42px;
+      height: 42px;
+      background: #FFFFFF;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+    }
+
+    .brand-logo-wrap svg { width: 100%; height: 100%; }
+
+    .brand-names h2 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #FFFFFF;
+      letter-spacing: -0.3px;
+    }
+
+    .brand-names h2 span { color: var(--green); }
+    .brand-names p { font-size: 0.7rem; color: var(--sidebar-text); line-height: 1.2; }
+
+    .sidebar-nav {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .nav-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: #475569;
+      margin: 14px 8px 6px 8px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 9px 12px;
+      border-radius: 8px;
+      color: var(--sidebar-text);
+      text-decoration: none;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+    }
+
+    .nav-item:hover { background: var(--sidebar-hover); color: var(--sidebar-text-bright); }
+    .nav-item.active { background: var(--sidebar-active); color: #FFFFFF; font-weight: 600; }
+    .nav-item i { font-size: 0.9rem; width: 18px; text-align: center; }
+
+    .sidebar-footer {
+      padding: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .privacy-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .privacy-card:hover { background: rgba(255, 255, 255, 0.08); }
+    .privacy-card i { color: var(--green); font-size: 1.1rem; }
+    .privacy-card-content h5 { font-size: 0.78rem; color: #FFFFFF; font-weight: 600; }
+    .privacy-card-content p { font-size: 0.68rem; color: var(--sidebar-text); }
+
+    /* ================= MAIN CONTAINER ================= */
+    .main-wrapper {
+      flex: 1;
+      height: 100vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: #FFFFFF;
+      border-bottom: 1px solid var(--card-border);
+      padding: 14px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      flex-shrink: 0;
+    }
+
+    .welcome-text h1 { font-size: 1.2rem; font-weight: 700; }
+    .welcome-text p { font-size: 0.8rem; color: var(--text-muted); }
+
+    .header-controls { display: flex; align-items: center; gap: 16px; }
+
+    .date-dropdown {
+      background: #FFFFFF;
+      border: 1px solid var(--card-border);
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-main);
+      cursor: pointer;
+    }
+
+    .header-icon-btn {
+      position: relative;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      cursor: pointer;
+    }
+
+    .header-icon-btn .badge-dot {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--blue-primary);
+    }
+
+    .user-profile-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      background: #F8FAFC;
+      border: 1px solid var(--card-border);
+      padding: 5px 12px;
+      border-radius: 30px;
+      transition: 0.2s;
+    }
+
+    .user-profile-btn:hover { background: #EEF2F6; border-color: var(--blue-primary); }
+
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--blue-primary);
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .user-details h4 { font-size: 0.8rem; font-weight: 700; }
+    .user-details p { font-size: 0.68rem; color: var(--text-muted); }
+
+    .content-area {
+      padding: 24px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* KPI Cards */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+    }
+
+    .kpi-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.04);
+    }
+
+    .kpi-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      color: #FFFFFF;
+    }
+
+    .kpi-icon.blue { background: #2563EB; }
+    .kpi-icon.green { background: #10B981; }
+    .kpi-icon.purple { background: #8B5CF6; }
+    .kpi-icon.amber { background: #F59E0B; }
+    .kpi-icon.teal { background: #06B6D4; }
+
+    .kpi-body .kpi-label { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; }
+    .kpi-body .kpi-val { font-size: 1.25rem; font-weight: 800; color: var(--text-main); margin: 2px 0; }
+    .kpi-body .kpi-sub { font-size: 0.68rem; color: var(--green); font-weight: 600; display: flex; align-items: center; gap: 3px; }
+    .kpi-body .kpi-sub.neutral { color: var(--text-muted); }
+
+    /* Middle & Bottom Grids */
+    .grid-3-col {
+      display: grid;
+      grid-template-columns: 1.3fr 1.3fr 0.9fr;
+      gap: 16px;
+    }
+
+    .dash-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .card-title-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .card-title-bar h3 { font-size: 0.88rem; font-weight: 700; }
+
+    .card-action-btn {
+      margin-top: 14px;
+      font-size: 0.75rem;
+      color: var(--blue-primary);
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .card-action-btn:hover { text-decoration: underline; }
+
+    /* Donut Layout */
+    .donut-layout {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      height: 180px;
+    }
+
+    .donut-chart-box {
+      width: 150px;
+      height: 150px;
+      position: relative;
+    }
+
+    .donut-center-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .donut-center-text .num { font-size: 0.95rem; font-weight: 800; }
+    .donut-center-text .lbl { font-size: 0.65rem; color: var(--text-muted); }
+
+    .donut-legend {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.72rem;
+    }
+
+    .legend-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
+
+    .legend-row:hover { background: #F1F5F9; }
+    .legend-indicator { display: flex; align-items: center; gap: 6px; }
+    .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .legend-vals { font-weight: 600; color: var(--text-main); }
+
+    /* Follow ups list */
+    .followup-box { display: flex; flex-direction: column; gap: 10px; }
+
+    .followup-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: var(--body-bg);
+      border: 1px solid var(--card-border);
+      cursor: pointer;
+      transition: 0.15s;
+    }
+
+    .followup-item:hover { background: #EDF2F6; }
+    .followup-icon { font-size: 1.1rem; margin-right: 8px; }
+    .followup-meta h4 { font-size: 0.78rem; font-weight: 700; }
+    .followup-meta p { font-size: 0.68rem; color: var(--text-muted); }
+    .followup-rate { text-align: right; }
+    .followup-rate .rate-num { font-size: 0.85rem; font-weight: 700; color: var(--green); }
+    .followup-rate .rate-lbl { font-size: 0.65rem; color: var(--text-muted); }
+
+    /* Districts */
+    .district-map-container { display: flex; gap: 16px; align-items: center; }
+    .map-preview { width: 110px; opacity: 0.85; }
+    .district-bars { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+
+    .district-bar-item {
+      display: flex;
+      align-items: center;
+      font-size: 0.72rem;
+      gap: 8px;
+      cursor: pointer;
+      padding: 3px 6px;
+      border-radius: 4px;
+    }
+
+    .district-bar-item:hover { background: #EEF2F6; }
+    .district-name { width: 80px; color: var(--text-muted); white-space: nowrap; }
+    .progress-track { flex: 1; height: 8px; background: #EEF2F6; border-radius: 4px; overflow: hidden; }
+    .progress-fill { height: 100%; background: var(--blue-primary); border-radius: 4px; }
+    .district-pct { font-weight: 700; width: 38px; text-align: right; }
+
+    /* Skill gaps */
+    .skill-gap-table { width: 100%; border-collapse: collapse; font-size: 0.73rem; }
+    .skill-gap-table th { text-align: left; color: var(--text-muted); font-size: 0.68rem; font-weight: 600; padding-bottom: 8px; }
+    .skill-gap-table td { padding: 6px 4px; border-bottom: 1px solid var(--body-bg); }
+    .skill-gap-table tr:hover td { background: #F8FAFC; cursor: pointer; }
+    .badge-rank {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      text-align: center;
+      line-height: 16px;
+      border-radius: 50%;
+      background: #FEE2E2;
+      color: var(--coral);
+      font-weight: 700;
+      font-size: 0.65rem;
+      margin-right: 6px;
+    }
+
+    /* Trainee Table Roster */
+    .roster-panel {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .roster-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .roster-header h3 { font-size: 0.95rem; font-weight: 700; }
+    .roster-header p { font-size: 0.75rem; color: var(--text-muted); }
+
+    .trainee-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+    }
+
+    .trainee-table th {
+      text-align: left;
+      padding: 10px 14px;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.68rem;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--card-border);
+      background: #F8FAFC;
+    }
+
+    .trainee-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--card-border);
+      vertical-align: middle;
+    }
+
+    .trainee-table tr:hover td {
+      background: #F8FAFC;
+    }
+
+    .badge-status {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .badge-verified { background: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; }
+    .badge-pending { background: #FFFBEB; color: #B45309; border: 1px solid #FDE68A; }
+
+    .btn-view-profile {
+      background: #EFF6FF;
+      color: var(--blue-primary);
+      border: 1px solid #BFDBFE;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+
+    .btn-view-profile:hover {
+      background: var(--blue-primary);
+      color: #FFFFFF;
+    }
+
+    /* Pillars */
+    .pillars-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-top: 4px;
+    }
+
+    .pillar-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .pillar-card:hover { transform: translateY(-2px); border-color: var(--blue-primary); }
+    .pillar-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      background: #EFF6FF;
+      color: var(--blue-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.05rem;
+    }
+    .pillar-info h5 { font-size: 0.8rem; font-weight: 700; }
+    .pillar-info p { font-size: 0.68rem; color: var(--text-muted); }
+
+    /* ================= MODAL DIALOGS ================= */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.45);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .modal-card {
+      background: #FFFFFF;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 540px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+      overflow: hidden;
+      animation: modalSlide 0.25s ease-out;
+    }
+
+    @keyframes modalSlide {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .modal-header {
+      padding: 18px 24px;
+      background: #F8FAFC;
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h3 { font-size: 1rem; font-weight: 700; }
+    .modal-close-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-muted); }
+
+    .modal-body { padding: 24px; max-height: 75vh; overflow-y: auto; font-size: 0.85rem; }
+
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-size: 0.78rem; font-weight: 600; margin-bottom: 6px; color: var(--text-main); }
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      font-size: 0.85rem;
+      outline: none;
+    }
+    .form-group input:focus, .form-group select:focus { border-color: var(--blue-primary); }
+
+    .modal-footer {
+      padding: 14px 24px;
+      background: #F8FAFC;
+      border-top: 1px solid var(--card-border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .btn-secondary {
+      background: #FFFFFF;
+      border: 1px solid var(--card-border);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: var(--blue-primary);
+      color: #FFFFFF;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    @media (max-width: 1200px) {
+      .kpi-row { grid-template-columns: repeat(3, 1fr); }
+      .grid-3-col { grid-template-columns: 1fr; }
+      .pillars-row { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ================= SIDEBAR ================= -->
+  <aside>
+    <div class="sidebar-brand">
+      <div class="brand-logo-wrap">
+        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M 52 14 A 38 38 0 1 0 74 72 A 38 38 0 0 0 46 14" stroke="#0F203C" stroke-width="7" stroke-linecap="round" fill="none"/>
+          <rect x="36" y="52" width="11" height="23" rx="2" fill="#0D7F6E"/>
+          <rect x="51" y="38" width="11" height="37" rx="2" fill="#2ECC71"/>
+          <circle cx="68" cy="27" r="5.5" fill="#0F203C"/>
+          <path d="M 64 36 C 64 36 67 43 69 53 L 75 51 C 72 40 76 33 80 20 C 72 26 66 32 64 36 Z" fill="#0F203C"/>
+          <path d="M 80 8 L 81.8 13.5 L 87.5 13.5 L 82.9 16.8 L 84.6 22.2 L 80 18.9 L 75.4 22.2 L 77.1 16.8 L 72.5 13.5 L 78.2 13.5 Z" fill="#F1C40F"/>
+        </svg>
+      </div>
+      <div class="brand-names">
+        <h2>Track<span>Nxt</span></h2>
+        <p>Skilling Outcomes &<br>Impact Measurement</p>
+      </div>
+    </div>
+
+    <div class="sidebar-nav">
+      <button class="nav-item active" onclick="activateNav(this, 'National Dashboard Overview')"><i class="fa-solid fa-chart-pie"></i> Dashboard</button>
+
+      <div class="nav-label">Track & Manage</div>
+      <button class="nav-item" onclick="scrollToRoster()"><i class="fa-regular fa-user"></i> Trainees</button>
+      <button class="nav-item" onclick="activateNav(this, 'Partner Employers & Verification')"><i class="fa-solid fa-briefcase"></i> Employers</button>
+      <button class="nav-item" onclick="activateNav(this, 'Longitudinal Follow-up Surveys')"><i class="fa-regular fa-clock"></i> Follow-ups</button>
+      <button class="nav-item" onclick="activateNav(this, 'Skills & Examination Assessments')"><i class="fa-regular fa-file-lines"></i> Assessments</button>
+      <button class="nav-item" onclick="activateNav(this, 'NSDC Certifications')"><i class="fa-solid fa-award"></i> Certifications</button>
+      <button class="nav-item" onclick="activateNav(this, 'Placements & Verification Ledger')"><i class="fa-solid fa-building-user"></i> Placements & Employment</button>
+      <button class="nav-item" onclick="activateNav(this, 'Self-Employment & Micro-Enterprises')"><i class="fa-solid fa-store"></i> Self-employment</button>
+      <button class="nav-item" onclick="activateNav(this, 'NAPS Apprenticeships')"><i class="fa-solid fa-gear"></i> Apprenticeships</button>
+
+      <div class="nav-label">Analytics & Insights</div>
+      <button class="nav-item" onclick="activateNav(this, 'Cohort Outcome Analytics')"><i class="fa-solid fa-chart-column"></i> Outcome Analytics</button>
+      <button class="nav-item" onclick="activateNav(this, 'Longitudinal Impact Analytics')"><i class="fa-solid fa-chart-line"></i> Impact Analytics</button>
+      <button class="nav-item" onclick="activateNav(this, 'National Skill Gap Analysis')"><i class="fa-solid fa-brain"></i> Skill Gap Analysis</button>
+      <button class="nav-item" onclick="activateNav(this, 'Statutory & Policy Reports')"><i class="fa-solid fa-file-lines"></i> Reports</button>
+
+      <div class="nav-label">Admin & Settings</div>
+      <button class="nav-item" onclick="activateNav(this, 'Training Programmes / Courses')"><i class="fa-solid fa-graduation-cap"></i> Programmes / Courses</button>
+      <button class="nav-item" onclick="activateNav(this, 'Certified Training Providers')"><i class="fa-solid fa-landmark"></i> Providers</button>
+      <button class="nav-item" onclick="activateNav(this, 'Users & Role-Based Access')"><i class="fa-solid fa-users-gear"></i> Users & Roles</button>
+      <button class="nav-item" onclick="activateNav(this, 'Data Quality & Deduplication')"><i class="fa-solid fa-database"></i> Data Quality</button>
+      <button class="nav-item" onclick="activateNav(this, 'Platform Settings')"><i class="fa-solid fa-sliders"></i> Settings</button>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="privacy-card" onclick="showInfoModal('DPDP Compliance Status', 'TrackNxt operates under strict Digital Personal Data Protection (DPDP) Act guidelines. All trainee identifiers are tokenized, purpose-specific consent is logged, and employer validation is conducted via encrypted links.')">
+        <i class="fa-solid fa-shield-halved"></i>
+        <div class="privacy-card-content">
+          <h5>Privacy & Consent</h5>
+          <p>DPDP Act (2026) Verified</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ================= MAIN BODY ================= -->
+  <div class="main-wrapper" id="mainContainer">
+    <header>
+      <div class="welcome-text">
+        <h1 id="topGreeting">Welcome back, Admin User! 👋</h1>
+        <p id="topSubtitle">Track outcomes. Measure impact. Improve livelihoods.</p>
+      </div>
+
+      <div class="header-controls">
+        <div class="date-dropdown" onclick="cycleFiscalYear()">
+          <i class="fa-regular fa-calendar"></i>
+          <span id="dateLabel">01 Apr 2024 - 31 Mar 2025</span>
+          <i class="fa-solid fa-chevron-down" style="font-size: 0.7rem;"></i>
+        </div>
+
+        <button class="header-icon-btn" onclick="showInfoModal('System Alerts', '● 1,294 high-priority 3-month follow-up surveys require assisted calling.<br>● 382 employer verification offer letters pending review.<br>● New batch added: Solar PV Technician Batch 2026-B.')">
+          <i class="fa-regular fa-bell"></i>
+          <span class="badge-dot"></span>
+        </button>
+
+        <!-- Profile Button: Triggers Editable Information Modal -->
+        <div class="user-profile-btn" onclick="openProfileModal()">
+          <div class="user-avatar" id="avatarInitial">AU</div>
+          <div class="user-details">
+            <h4 id="profileNameDisplay">Admin User</h4>
+            <p id="profileRoleDisplay">National Admin</p>
+          </div>
+          <i class="fa-solid fa-pen-to-square" style="font-size: 0.75rem; color: var(--text-muted); margin-left: 4px;"></i>
+        </div>
+      </div>
+    </header>
+
+    <div class="content-area">
+
+      <!-- 5 Summary KPI Cards -->
+      <section class="kpi-row">
+        <div class="kpi-card" onclick="showInfoModal('Total Trainees Cohort', 'Total certified and tracked students across 14 state skill development missions (SSDMs). Longitudinal retention is actively monitored.')">
+          <div class="kpi-icon blue"><i class="fa-solid fa-users"></i></div>
+          <div class="kpi-body">
+            <div class="kpi-label">Total Trainees</div>
+            <div class="kpi-val" id="kpiTotal">12,84,532</div>
+            <div class="kpi-sub"><i class="fa-solid fa-arrow-up"></i> 12.6% vs last year</div>
+          </div>
+        </div>
+
+        <div class="kpi-card" onclick="showInfoModal('Placed & Self-Employed Analysis', 'Comprises 3.45L formal placements, 1.92L informal wage earners, and 1.23L verified entrepreneurs operating registered micro-enterprises.')">
+          <div class="kpi-icon green"><i class="fa-solid fa-briefcase"></i></div>
+          <div class="kpi-body">
+            <div class="kpi-label">Placed / Self-employed</div>
+            <div class="kpi-val" id="kpiPlaced">7,65,430</div>
+            <div class="kpi-sub neutral">59.6% of tracked trainees</div>
+          </div>
+        </div>
+
+        <div class="kpi-card" onclick="showInfoModal('Retention Rate Breakdown', 'Trainees who remain actively employed in Month 6 post-placement. The highest retention was recorded in Healthcare Nursing (88%) and IT (82%).')">
+          <div class="kpi-icon purple"><i class="fa-solid fa-chart-line"></i></div>
+          <div class="kpi-body">
+            <div class="kpi-label">Employment Retention (6+ mos)</div>
+            <div class="kpi-val" id="kpiRetention">72.3%</div>
+            <div class="kpi-sub"><i class="fa-solid fa-arrow-up"></i> 5.7% vs last year</div>
+          </div>
+        </div>
+
+        <div class="kpi-card" onclick="showInfoModal('Wage Growth Trends', 'Calculated based on verified pay-slips and employer confirmations. Average baseline exit wage of ₹11,200 rises to ₹20,400 by month 36.')">
+          <div class="kpi-icon amber"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+          <div class="kpi-body">
+            <div class="kpi-label">Median Wage (Monthly)</div>
+            <div class="kpi-val" id="kpiWage">₹ 18,650</div>
+            <div class="kpi-sub"><i class="fa-solid fa-arrow-up"></i> 8.4% vs last year</div>
+          </div>
+        </div>
+
+        <div class="kpi-card" onclick="showInfoModal('Certifications Issued', 'NSDC and NCVET authenticated certificates issued. All certificates feature verifiable digital QR codes synced to DigiLocker.')">
+          <div class="kpi-icon teal"><i class="fa-solid fa-award"></i></div>
+          <div class="kpi-body">
+            <div class="kpi-label">Certifications Issued</div>
+            <div class="kpi-val" id="kpiCert">10,24,389</div>
+            <div class="kpi-sub"><i class="fa-solid fa-arrow-up"></i> 15.3% vs last year</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Row 2: Donut, Line Chart, Follow-ups -->
+      <section class="grid-3-col">
+        <!-- Outcomes Overview Donut -->
+        <div class="dash-card">
+          <div class="card-title-bar">
+            <h3>Outcomes Overview (All Programmes)</h3>
+          </div>
+          <div class="donut-layout">
+            <div class="donut-chart-box">
+              <canvas id="outcomesChart"></canvas>
+              <div class="donut-center-text">
+                <div class="num" id="donutCenterNum">12,84,532</div>
+                <div class="lbl">Total Trainees</div>
+              </div>
+            </div>
+            <div class="donut-legend">
+              <div class="legend-row" onclick="showInfoModal('Formal Employment', '3,45,231 trainees placed in verified enterprises with formal contracts, Provident Fund (PF), and ESI benefits.')">
+                <div class="legend-indicator"><span class="legend-dot" style="background:#10B981;"></span> Employed (Formal)</div>
+                <span class="legend-vals">3,45,231 (26.9%)</span>
+              </div>
+              <div class="legend-row" onclick="showInfoModal('Informal Wage Earners', '1,92,184 workers engaged in contractual, gig, or non-formal trade roles.')">
+                <div class="legend-indicator"><span class="legend-dot" style="background:#3B82F6;"></span> Employed (Informal)</div>
+                <span class="legend-vals">1,92,184 (15.0%)</span>
+              </div>
+              <div class="legend-row" onclick="showInfoModal('Self-Employed', '1,23,870 individuals running micro-enterprises, clinics, solar repair shops, or freelance IT services.')">
+                <div class="legend-indicator"><span class="legend-dot" style="background:#8B5CF6;"></span> Self-employed</div>
+                <span class="legend-vals">1,23,870 (9.6%)</span>
+              </div>
+              <div class="legend-row" onclick="showInfoModal('Apprenticeships', '58,732 active apprentices placed under the National Apprenticeship Promotion Scheme (NAPS).')">
+                <div class="legend-indicator"><span class="legend-dot" style="background:#F59E0B;"></span> Apprenticeship</div>
+                <span class="legend-vals">58,732 (4.6%)</span>
+              </div>
+              <div class="legend-row" onclick="showInfoModal('Seeking / Unplaced', '2,18,915 trainees actively seeking placement or participating in re-skilling modules.')">
+                <div class="legend-indicator"><span class="legend-dot" style="background:#EF4444;"></span> Seeking / Not Placed</div>
+                <span class="legend-vals">2,18,915 (17.1%)</span>
+              </div>
+              <div class="legend-row" onclick="showInfoModal('Lost to Follow-up', '3,45,600 non-reachable contacts. Scheduled for automated WhatsApp micro-surveys.')">
+                <div class="legend-indicator"><span class="legend-dot" style="background:#94A3B8;"></span> Not Available / Lost</div>
+                <span class="legend-vals">3,45,600 (26.8%)</span>
+              </div>
+            </div>
+          </div>
+          <button class="card-action-btn" onclick="showInfoModal('Detailed Sector Outcomes', 'Top 3 Performing Sectors:<br>1. Healthcare & Life Sciences: 79% Placement Rate<br>2. Renewable Energy (Solar PV): 74% Placement Rate<br>3. IT-ITeS & CRM: 71% Placement Rate')">View detailed analytics →</button>
+        </div>
+
+        <!-- Wage Progression Chart -->
+        <div class="dash-card">
+          <div class="card-title-bar">
+            <h3>Wage Progression (Median Monthly Wage) <i class="fa-regular fa-circle-question" style="color:var(--text-light); font-size:0.75rem;"></i></h3>
+          </div>
+          <div style="height: 180px; width:100%;">
+            <canvas id="wageLineChart"></canvas>
+          </div>
+          <button class="card-action-btn" onclick="showInfoModal('Wage Progression Insights', '● Baseline Entry Wage: ₹11,200/month<br>● Month 12 Median: ₹15,750/month (+40.6% hike)<br>● Month 36 Peak: ₹20,400/month (+82.1% longitudinal growth)<br>Trainees with multi-skill certifications achieved 1.4x faster wage compounding.')">View wage analytics →</button>
+        </div>
+
+        <!-- Follow-ups (This Month) -->
+        <div class="dash-card">
+          <div class="card-title-bar">
+            <h3>Follow-ups (This Month)</h3>
+          </div>
+          <div class="followup-box">
+            <div class="followup-item" onclick="showInfoModal('Automated Follow-ups', 'Dispatched 48,231 surveys via interactive WhatsApp API templates and IVR phone calls. 68% response completion with zero human intervention.')">
+              <div style="display:flex; align-items:center;">
+                <i class="fa-solid fa-phone followup-icon" style="color:var(--green);"></i>
+                <div class="followup-meta">
+                  <h4>Automated Follow-ups</h4>
+                  <p>48,231 Dispatched</p>
+                </div>
+              </div>
+              <div class="followup-rate">
+                <div class="rate-num">68%</div>
+                <div class="rate-lbl">Success Rate</div>
+              </div>
+            </div>
+
+            <div class="followup-item" onclick="showInfoModal('Assisted Follow-ups', '12,431 telephone interviews conducted by certified community calling desks for trainees with low digital literacy.')">
+              <div style="display:flex; align-items:center;">
+                <i class="fa-solid fa-headset followup-icon" style="color:var(--blue-primary);"></i>
+                <div class="followup-meta">
+                  <h4>Assisted Follow-ups</h4>
+                  <p>12,431 Calls Made</p>
+                </div>
+              </div>
+              <div class="followup-rate">
+                <div class="rate-num">74%</div>
+                <div class="rate-lbl">Success Rate</div>
+              </div>
+            </div>
+
+            <div class="followup-item" onclick="showInfoModal('Pending Priority Surveys', '5,673 surveys remaining. 1,294 are designated High Priority because they cross the critical 6-month retention verification window.')">
+              <div style="display:flex; align-items:center;">
+                <i class="fa-solid fa-clipboard-list followup-icon" style="color:var(--amber);"></i>
+                <div class="followup-meta">
+                  <h4>Pending Follow-ups</h4>
+                  <p>5,673 Pending</p>
+                </div>
+              </div>
+              <div class="followup-rate">
+                <div class="rate-num" style="color:var(--coral);">1,294</div>
+                <div class="rate-lbl">High Priority</div>
+              </div>
+            </div>
+          </div>
+          <button class="card-action-btn" onclick="showInfoModal('Outreach Automation Engine', 'Automated survey queues trigger at Day 90, 180, and 365. Reminders use regional language prompts to maintain high completion.')">Go to Follow-ups →</button>
+        </div>
+      </section>
+
+      <!-- Row 3: Districts, Top Skill Gaps, Reasons for Non-placement -->
+      <section class="grid-3-col">
+        <!-- Outcomes by District -->
+        <div class="dash-card">
+          <div class="card-title-bar">
+            <h3>Outcomes by District (Top 5)</h3>
+          </div>
+          <div class="district-map-container">
+            <svg class="map-preview" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M40 10 L55 12 L65 25 L80 30 L85 45 L70 55 L75 75 L55 90 L45 80 L35 85 L25 70 L30 50 L20 40 L30 25 Z" fill="#E2E8F0" stroke="#94A3B8" stroke-width="1.5"/>
+              <circle cx="50" cy="45" r="4" fill="#2563EB"/>
+              <circle cx="65" cy="55" r="3" fill="#10B981"/>
+              <circle cx="35" cy="65" r="3.5" fill="#8B5CF6"/>
+            </svg>
+            
+            <div class="district-bars">
+              <div style="display:flex; justify-content:space-between; font-size:0.68rem; color:var(--text-muted); margin-bottom:2px;">
+                <span>District</span>
+                <span>Placement Rate</span>
+              </div>
+              <div class="district-bar-item" onclick="showInfoModal('Dhar (MP) District', 'Placement Rate: 72.4%<br>Top Trade: Automotive Manufacturing & Solar Installers<br>Participating Employers: 42 Local Vendors')">
+                <span class="district-name">Dhar (MP)</span>
+                <div class="progress-track"><div class="progress-fill" style="width: 72.4%;"></div></div>
+                <span class="district-pct">72.4%</span>
+              </div>
+              <div class="district-bar-item" onclick="showInfoModal('Tumakuru (KA) District', 'Placement Rate: 68.7%<br>Top Trade: Precision Tooling & Industrial Electricals<br>Average Wage: ₹19,200/mo')">
+                <span class="district-name">Tumakuru (KA)</span>
+                <div class="progress-track"><div class="progress-fill" style="width: 68.7%;"></div></div>
+                <span class="district-pct">68.7%</span>
+              </div>
+              <div class="district-bar-item" onclick="showInfoModal('Pune (MH) District', 'Placement Rate: 65.1%<br>Top Trade: IT Support, Logistics, Nursing<br>Average Wage: ₹22,400/mo')">
+                <span class="district-name">Pune (MH)</span>
+                <div class="progress-track"><div class="progress-fill" style="width: 65.1%;"></div></div>
+                <span class="district-pct">65.1%</span>
+              </div>
+              <div class="district-bar-item" onclick="showInfoModal('Surat (GJ) District', 'Placement Rate: 63.2%<br>Top Trade: Textile Machinery Automation & Diamond Finishing')">
+                <span class="district-name">Surat (GJ)</span>
+                <div class="progress-track"><div class="progress-fill" style="width: 63.2%;"></div></div>
+                <span class="district-pct">63.2%</span>
+              </div>
+              <div class="district-bar-item" onclick="showInfoModal('Lucknow (UP) District', 'Placement Rate: 62.5%<br>Top Trade: Healthcare Nursing & Solar Installation')">
+                <span class="district-name">Lucknow (UP)</span>
+                <div class="progress-track"><div class="progress-fill" style="width: 62.5%;"></div></div>
+                <span class="district-pct">62.5%</span>
+              </div>
+            </div>
+          </div>
+          <button class="card-action-btn" onclick="showInfoModal('National District Coverage', 'Active monitoring is currently operational across 420 districts. High-growth industrial corridors show an average 18% higher initial absorption.')">View district analytics →</button>
+        </div>
+
+        <!-- Top Skill Gaps Identified -->
+        <div class="dash-card">
+          <div class="card-title-bar">
+            <h3><i class="fa-solid fa-circle-exclamation" style="color:var(--coral);"></i> Top Skill Gaps Identified</h3>
+          </div>
+          <table class="skill-gap-table">
+            <thead>
+              <tr>
+                <th>Skill Gap</th>
+                <th style="text-align: right;">Affected Trainees</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr onclick="showInfoModal('Skill Gap: Advanced Digital Skills', 'Affects 2,45,231 trainees. Employers report candidates lack basic CRM management and spreadsheet automation skills.')">
+                <td><span class="badge-rank">1</span> Advanced Digital Skills</td>
+                <td style="text-align: right; font-weight:600;">2,45,231</td>
+              </tr>
+              <tr onclick="showInfoModal('Skill Gap: Technical Skills', 'Affects 2,10,342 trainees. CNC tooling and electrical diagnostics need equipment upgrades in regional training labs.')">
+                <td><span class="badge-rank">2</span> Industry-specific Technical</td>
+                <td style="text-align: right; font-weight:600;">2,10,342</td>
+              </tr>
+              <tr onclick="showInfoModal('Skill Gap: Soft Skills', 'Affects 1,87,654 trainees. Workplace etiquette, team communication, and client support interview readiness.')">
+                <td><span class="badge-rank">3</span> Communication & Soft Skills</td>
+                <td style="text-align: right; font-weight:600;">1,87,654</td>
+              </tr>
+              <tr onclick="showInfoModal('Skill Gap: Hands-on Experience', 'Affects 1,23,876 trainees. Recommended solution: Mandatory 45-day on-site apprenticeship before course exit.')">
+                <td><span class="badge-rank">4</span> Practical / Hands-on</td>
+                <td style="text-align: right; font-weight:600;">1,23,876</td>
+              </tr>
+              <tr onclick="showInfoModal('Skill Gap: English Proficiency', 'Affects 98,765 trainees. Technical terms comprehension is required for medical, hospitality, and IT desk profiles.')">
+                <td><span class="badge-rank">5</span> English Proficiency</td>
+                <td style="text-align: right; font-weight:600;">98,765</td>
+              </tr>
+            </tbody>
+          </table>
+          <button class="card-action-btn" onclick="showInfoModal('Curriculum Enhancement Recommendations', 'Sector Skill Councils (SSCs) are updating 18 qualification packs based on these reported gap metrics.')">View skill gap analysis →</button>
+        </div>
+
+        <!-- Reasons for Non-placement / Attrition -->
+        <div class="dash-card">
+          <div class="card-title-bar">
+            <h3>Reasons for Non-placement / Attrition</h3>
+          </div>
+          <div style="display:flex; align-items:center; gap:12px; height: 160px;">
+            <div style="width:120px; height:120px;">
+              <canvas id="reasonsChart"></canvas>
+            </div>
+            <div class="donut-legend" style="gap:4px;">
+              <div class="legend-row" onclick="showInfoModal('Lack of Relevant Skills', '32.6% of unplaced candidates cite mismatch between classroom theory and real on-site operational demands.')">
+                <div class="legend-indicator"><span class="legend-dot" style="background:#2563EB;"></span> Skill Mismatch</div>
+                <span class="legend-vals">32.6%</span>
+              </div>
+              <div class="legend-row" onclick="showInfoModal('Location Constraints', '22.1% unable to migrate to Tier-1 industrial clusters due to relocation and accommodation costs.')">
+                <div class="legend-indicator"><span class="legend-dot" style="background:#10B981;"></span> Location</div>
+                <span class="legend-vals">22.1%</span>
+              </div>
+              <div class="legend-row" onclick="showInfoModal('Low Experience', '16.8% of interview rejections cite preference for candidates with prior practical project hours.')">
+                <div class="legend-indicator"><span class="legend-dot" style="background:#F59E0B;"></span> Low Experience</div>
+                <span class="legend-vals">16.8%</span>
+              </div>
+              <div class="legend-row" onclick="showInfoModal('Family / Personal', '12.7% drop out due to marriage, family care, or local agricultural obligations.')">
+                <div class="legend-indicator"><span class="legend-dot" style="background:#8B5CF6;"></span> Family Reasons</div>
+                <span class="legend-vals">12.7%</span>
+              </div>
+              <div class="legend-row" onclick="showInfoModal('Other Factors', '15.8% pursuing advanced education, awaiting higher competitive exams, or wage negotiations.')">
+                <div class="legend-indicator"><span class="legend-dot" style="background:#94A3B8;"></span> Other</div>
+                <span class="legend-vals">15.8%</span>
+              </div>
+            </div>
+          </div>
+          <button class="card-action-btn" onclick="showInfoModal('Non-Placement Mitigation', 'Active policy intervention: Launching localized housing allowances and apprenticeship stipends to reduce migration attrition.')">View detailed reasons →</button>
+        </div>
+      </section>
+
+      <!-- ================= ADDED: TRAINEE DETAILS & COURSES ROSTER ================= -->
+      <section class="roster-panel" id="traineeRosterSection">
+        <div class="roster-header">
+          <div>
+            <h3>Active Trainee Cohort & Course Outcomes</h3>
+            <p>Individual candidate records, verification status, and longitudinal post-course tracking</p>
+          </div>
+          <button class="btn-primary" onclick="openProfileModal()">+ Add / Edit Trainee</button>
+        </div>
+
+        <div style="overflow-x: auto;">
+          <table class="trainee-table">
+            <thead>
+              <tr>
+                <th>Trainee ID</th>
+                <th>Candidate Name</th>
+                <th>Enrolled Course & Level</th>
+                <th>Training Center</th>
+                <th>Current Employer</th>
+                <th>Monthly Wage</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Trainee 1 -->
+              <tr>
+                <td><strong>TR-2026-9041</strong></td>
+                <td>
+                  <div style="font-weight: 700;">Rahul Sharma</div>
+                  <div style="font-size: 0.7rem; color: var(--text-muted);">+91 98765 43210</div>
+                </td>
+                <td>
+                  <div>Solar Panel Installation Technician</div>
+                  <div style="font-size: 0.7rem; color: var(--blue-primary); font-weight: 600;">NSDC Level 4 (Batch 2025-26)</div>
+                </td>
+                <td>Pradhan Mantri Kaushal Kendra (PMKK), Dhar</td>
+                <td>CleanPower Infra Solutions Pvt Ltd</td>
+                <td style="font-weight: 700; color: var(--text-main);">₹19,500</td>
+                <td><span class="badge-status badge-verified"><i class="fa-solid fa-circle-check"></i> Employer Verified</span></td>
+                <td>
+                  <button class="btn-view-profile" onclick="viewTraineeProfile('Rahul Sharma', 'TR-2026-9041', 'Solar Panel Installation Technician (NSDC Level 4)', 'PMKK Dhar, MP', 'CleanPower Infra Solutions Pvt Ltd', '₹19,500', 'Verified (Offer letter validated on 14 Jan 2026)', '6 Months Active (Grade A)')">View Profile</button>
+                </td>
+              </tr>
+              <!-- Trainee 2 -->
+              <tr>
+                <td><strong>TR-2026-8812</strong></td>
+                <td>
+                  <div style="font-weight: 700;">Priya Sundaram</div>
+                  <div style="font-size: 0.7rem; color: var(--text-muted);">+91 98112 34567</div>
+                </td>
+                <td>
+                  <div>General Duty Healthcare Assistant</div>
+                  <div style="font-size: 0.7rem; color: var(--blue-primary); font-weight: 600;">HSSC Level 4 (Batch 2025-26)</div>
+                </td>
+                <td>Apex Skill Academy, Pune (MH)</td>
+                <td>Max Super Specialty Hospital</td>
+                <td style="font-weight: 700; color: var(--text-main);">₹21,000</td>
+                <td><span class="badge-status badge-verified"><i class="fa-solid fa-circle-check"></i> Employer Verified</span></td>
+                <td>
+                  <button class="btn-view-profile" onclick="viewTraineeProfile('Priya Sundaram', 'TR-2026-8812', 'General Duty Healthcare Assistant (HSSC Level 4)', 'Apex Skill Academy, Pune', 'Max Super Specialty Hospital', '₹21,000', 'Verified (Hospital HR validated on 02 Feb 2026)', '9 Months Active (Retention Milestone Achieved)')">View Profile</button>
+                </td>
+              </tr>
+              <!-- Trainee 3 -->
+              <tr>
+                <td><strong>TR-2026-7640</strong></td>
+                <td>
+                  <div style="font-weight: 700;">Mohit Yadav</div>
+                  <div style="font-size: 0.7rem; color: var(--text-muted);">+91 97234 56789</div>
+                </td>
+                <td>
+                  <div>CNC Machine Operator & Programmer</div>
+                  <div style="font-size: 0.7rem; color: var(--blue-primary); font-weight: 600;">CGSC Level 3 (Batch 2025-26)</div>
+                </td>
+                <td>Government ITI, Tumakuru (KA)</td>
+                <td>SunGrid Precision Tooling</td>
+                <td style="font-weight: 700; color: var(--text-main);">₹17,000</td>
+                <td><span class="badge-status badge-pending"><i class="fa-regular fa-clock"></i> Review Pending</span></td>
+                <td>
+                  <button class="btn-view-profile" onclick="viewTraineeProfile('Mohit Yadav', 'TR-2026-7640', 'CNC Machine Operator (CGSC Level 3)', 'Govt ITI, Tumakuru', 'SunGrid Precision Tooling', '₹17,000', 'Pending Employer Signature (Offer letter uploaded)', '3 Months Follow-Up Pending')">View Profile</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Row 4: 4 Bottom Foundation Pillars -->
+      <section class="pillars-row">
+        <div class="pillar-card" onclick="showInfoModal('Privacy First Pillar', 'TrackNxt implements end-to-end tokenization. Trainees can revoke consent or request data correction at any time directly through the mobile interface.')">
+          <div class="pillar-icon"><i class="fa-solid fa-check"></i></div>
+          <div class="pillar-info">
+            <h5>Privacy First</h5>
+            <p>Consent-based tracking & data protection</p>
+          </div>
+        </div>
+
+        <div class="pillar-card" onclick="showInfoModal('Low Burden Architecture', 'Instead of requiring constant app logins, automated survey bots dispatch quick WhatsApp micro-surveys that take under 45 seconds to answer.')">
+          <div class="pillar-icon"><i class="fa-solid fa-phone"></i></div>
+          <div class="pillar-info">
+            <h5>Low Burden</h5>
+            <p>IVR, WhatsApp, SMS and assisted follow-ups</p>
+          </div>
+        </div>
+
+        <div class="pillar-card" onclick="showInfoModal('Verification & Trust Layer', 'Eliminates falsified placements: employers authenticate candidate placement and salary bands via single-click encrypted verification portals.')">
+          <div class="pillar-icon"><i class="fa-solid fa-shield-halved"></i></div>
+          <div class="pillar-info">
+            <h5>Verified & Reliable</h5>
+            <p>Employer validation and data quality checks</p>
+          </div>
+        </div>
+
+        <div class="pillar-card" onclick="showInfoModal('Actionable Insights Engine', 'Provides state skill missions with empirical proof of which courses lead to real salary growth versus dead-end certificates.')">
+          <div class="pillar-icon"><i class="fa-solid fa-chart-simple"></i></div>
+          <div class="pillar-info">
+            <h5>Actionable Insights</h5>
+            <p>Evidence for better decisions and policy design</p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- ================= EDITABLE USER PROFILE MODAL ================= -->
+  <div class="modal-overlay" id="profileModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>User Profile & Stakeholder Details</h3>
+        <button class="modal-close-btn" onclick="closeProfileModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="profileForm" onsubmit="saveProfileInfo(event)">
+          <div class="form-group">
+            <label>Active Persona / Role</label>
+            <select id="inputRole" onchange="toggleRoleFormFields()">
+              <option value="admin">Administrator / Institute Head</option>
+              <option value="trainee">Trainee / Candidate</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="inputName" value="Rahul Sharma" required />
+          </div>
+
+          <div class="form-group">
+            <label>Designation / Title</label>
+            <input type="text" id="inputDesignation" value="Certified Trainee (Solar PV)" required />
+          </div>
+
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" id="inputEmail" value="rahul.sharma@example.com" required />
+          </div>
+
+          <div class="form-group">
+            <label>Phone / WhatsApp Number</label>
+            <input type="text" id="inputPhone" value="+91 98765 43210" required />
+          </div>
+
+          <div class="form-group" id="traineeFieldGroup">
+            <label>Enrolled Course / Program Track</label>
+            <input type="text" id="inputTrade" value="Solar Panel Installation Technician (NSDC Level 4)" />
+          </div>
+
+          <div class="form-group">
+            <label>Institution / Skill Center</label>
+            <input type="text" id="inputInstitute" value="Pradhan Mantri Kaushal Kendra (PMKK), Dhar" />
+          </div>
+
+          <div class="modal-footer" style="padding: 12px 0 0 0; background: none;">
+            <button type="button" class="btn-secondary" onclick="closeProfileModal()">Cancel</button>
+            <button type="submit" class="btn-primary">Save Profile Info</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= GENERAL INFORMATION MODAL ================= -->
+  <div class="modal-overlay" id="infoModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="infoModalTitle">Detail Information</h3>
+        <button class="modal-close-btn" onclick="closeInfoModal()">&times;</button>
+      </div>
+      <div class="modal-body" id="infoModalContent" style="line-height: 1.6; color: #334155;">
+        <!-- Dynamic Content Injected Here -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn-primary" onclick="closeInfoModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart Scripts and Interactive Event Handlers -->
+  <script>
+    // 1. Outcomes Overview Donut Chart
+    const ctxOutcomes = document.getElementById('outcomesChart').getContext('2d');
+    const outcomesChart = new Chart(ctxOutcomes, {
+      type: 'doughnut',
+      data: {
+        datasets: [{
+          data: [345231, 192184, 123870, 58732, 218915, 345600],
+          backgroundColor: ['#10B981', '#3B82F6', '#8B5CF6', '#F59E0B', '#EF4444', '#94A3B8'],
+          borderWidth: 2,
+          borderColor: '#FFFFFF'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '72%',
+        plugins: {
+          legend: { display: false },
+          tooltip: { enabled: true }
+        }
+      }
+    });
+
+    // 2. Wage Progression Line Chart
+    const ctxWage = document.getElementById('wageLineChart').getContext('2d');
+    const wageChart = new Chart(ctxWage, {
+      type: 'line',
+      data: {
+        labels: ['At Placement', '6 Months', '12 Months', '24 Months', '36 Months'],
+        datasets: [{
+          data: [11200, 13450, 15750, 17850, 20400],
+          borderColor: '#2563EB',
+          backgroundColor: '#2563EB',
+          borderWidth: 2,
+          fill: false,
+          tension: 0.2,
+          pointRadius: 4,
+          pointHoverRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { display: false }, ticks: { font: { size: 9 }, color: '#94A3B8' } },
+          y: {
+            min: 0,
+            max: 25000,
+            ticks: {
+              stepSize: 5000,
+              callback: value => '₹' + (value / 1000) + 'k',
+              font: { size: 9 },
+              color: '#94A3B8'
+            },
+            grid: { color: '#F1F5F9' }
+          }
+        }
+      }
+    });
+
+    // 3. Reasons for Non-placement Donut Chart
+    const ctxReasons = document.getElementById('reasonsChart').getContext('2d');
+    const reasonsChart = new Chart(ctxReasons, {
+      type: 'pie',
+      data: {
+        datasets: [{
+          data: [32.6, 22.1, 16.8, 12.7, 15.8],
+          backgroundColor: ['#2563EB', '#10B981', '#F59E0B', '#8B5CF6', '#94A3B8'],
+          borderWidth: 2,
+          borderColor: '#FFFFFF'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } }
+      }
+    });
+
+    // ================= INTERACTIVE CONTROLLER LOGIC =================
+
+    function scrollToRoster() {
+      document.getElementById('traineeRosterSection').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function activateNav(btn, sectionName) {
+      document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      showInfoModal(sectionName, `You have selected <strong>${sectionName}</strong>.<br><br>The portal updates views dynamically based on authorized role credentials.`);
+    }
+
+    function viewTraineeProfile(name, id, course, center, employer, wage, verification, status) {
+      const content = `
+        <div style="font-size: 0.85rem; line-height: 1.8;">
+          <p><strong>Candidate Name:</strong> ${name}</p>
+          <p><strong>Trainee ID:</strong> ${id}</p>
+          <p><strong>Course Enrolled:</strong> ${course}</p>
+          <p><strong>Accredited Center:</strong> ${center}</p>
+          <p><strong>Current Employer:</strong> ${employer}</p>
+          <p><strong>Monthly Gross Salary:</strong> ${wage}</p>
+          <p><strong>Employer Verification:</strong> <span style="color: var(--green); font-weight: 600;">${verification}</span></p>
+          <p><strong>Longitudinal Retention:</strong> ${status}</p>
+          <p><strong>DPDP Consent Logged:</strong> <span style="color: var(--blue-primary);">Yes (Token: #DPDP-IN-9082)</span></p>
+        </div>
+      `;
+      showInfoModal(`Trainee Profile: ${name}`, content);
+    }
+
+    function showInfoModal(title, text) {
+      document.getElementById('infoModalTitle').innerHTML = title;
+      document.getElementById('infoModalContent').innerHTML = text;
+      document.getElementById('infoModal').style.display = 'flex';
+    }
+
+    function closeInfoModal() {
+      document.getElementById('infoModal').style.display = 'none';
+    }
+
+    function openProfileModal() {
+      document.getElementById('profileModal').style.display = 'flex';
+    }
+
+    function closeProfileModal() {
+      document.getElementById('profileModal').style.display = 'none';
+    }
+
+    function toggleRoleFormFields() {
+      const isTrainee = document.getElementById('inputRole').value === 'trainee';
+      document.getElementById('traineeFieldGroup').style.display = isTrainee ? 'block' : 'none';
+      if (isTrainee) {
+        document.getElementById('inputDesignation').value = 'Certified Candidate (2025)';
+      } else {
+        document.getElementById('inputDesignation').value = 'National Admin';
+      }
+    }
+
+    function saveProfileInfo(e) {
+      e.preventDefault();
+      const name = document.getElementById('inputName').value;
+      const designation = document.getElementById('inputDesignation').value;
+      const role = document.getElementById('inputRole').value;
+
+      const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'AU';
+      document.getElementById('avatarInitial').innerText = initials;
+      document.getElementById('profileNameDisplay').innerText = name;
+      document.getElementById('profileRoleDisplay').innerText = designation;
+
+      if (role === 'trainee') {
+        document.getElementById('topGreeting').innerText = `Welcome, ${name}! 🎓`;
+        document.getElementById('topSubtitle').innerText = `Track your course certification, salary progression, and verified placements.`;
+      } else {
+        document.getElementById('topGreeting').innerText = `Welcome back, ${name}! 👋`;
+        document.getElementById('topSubtitle').innerText = `Track outcomes. Measure impact. Improve livelihoods.`;
+      }
+
+      closeProfileModal();
+      showInfoModal('Profile Updated', `Your details have been saved successfully.<br><br><strong>Name:</strong> ${name}<br><strong>Role:</strong> ${designation}<br><strong>System Status:</strong> Synchronized.`);
+    }
+
+    const fiscalYears = [
+      { label: "01 Apr 2024 - 31 Mar 2025", total: "12,84,532", placed: "7,65,430", wage: "₹ 18,650", certs: "10,24,389" },
+      { label: "01 Apr 2025 - 31 Mar 2026", total: "14,92,100", placed: "9,42,800", wage: "₹ 20,400", certs: "12,18,450" },
+      { label: "01 Apr 2023 - 31 Mar 2024", total: "10,12,040", placed: "5,88,120", wage: "₹ 16,900", certs: "8,54,000" }
+    ];
+    let currentFyIndex = 0;
+
+    function cycleFiscalYear() {
+      currentFyIndex = (currentFyIndex + 1) % fiscalYears.length;
+      const fy = fiscalYears[currentFyIndex];
+      document.getElementById('dateLabel').innerText = fy.label;
+      document.getElementById('kpiTotal').innerText = fy.total;
+      document.getElementById('kpiPlaced').innerText = fy.placed;
+      document.getElementById('kpiWage').innerText = fy.wage;
+      document.getElementById('kpiCert').innerText = fy.certs;
+      document.getElementById('donutCenterNum').innerText = fy.total;
+    }
+
+    window.onclick = function(e) {
+      if (e.target.classList.contains('modal-overlay')) {
+        e.target.style.display = 'none';
+      }
+    };
+  </script>
+</body>
+</html>
