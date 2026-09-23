@@ -1,0 +1,1696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TrackNxt | Skill Gap Diagnostic & Trainee Analytics</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root {
+      --sidebar-bg: #0C1A30;
+      --sidebar-hover: #162947;
+      --sidebar-active: #1D58D8;
+      --sidebar-text: #94A3B8;
+      --sidebar-text-bright: #FFFFFF;
+
+      --body-bg: #F4F7FB;
+      --card-bg: #FFFFFF;
+      --card-border: #E2E8F0;
+      
+      --text-main: #0F172A;
+      --text-muted: #64748B;
+      --text-light: #94A3B8;
+
+      --blue-primary: #1E60F2;
+      --green: #10B981;
+      --purple: #8B5CF6;
+      --amber: #F59E0B;
+      --teal: #06B6D4;
+      --coral: #EF4444;
+
+      --quiz-card-bg: #1e293b;
+      --quiz-accent: #6366f1;
+      --quiz-accent-hover: #4f46e5;
+      --quiz-correct: #22c55e;
+      --quiz-incorrect: #ef4444;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+    
+    html, body {
+      height: 100vh;
+      overflow: hidden;
+      background-color: var(--body-bg);
+      color: var(--text-main);
+      display: flex;
+    }
+
+    /* ================= SIDEBAR ================= */
+    aside {
+      width: 260px;
+      min-width: 260px;
+      height: 100vh;
+      background: var(--sidebar-bg);
+      color: var(--sidebar-text);
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid rgba(255, 255, 255, 0.06);
+      flex-shrink: 0;
+    }
+
+    .sidebar-brand {
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      cursor: pointer;
+    }
+
+    .brand-logo-wrap {
+      width: 42px;
+      height: 42px;
+      background: #FFFFFF;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+    }
+
+    .brand-logo-wrap svg { width: 100%; height: 100%; }
+
+    .brand-names h2 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #FFFFFF;
+      letter-spacing: -0.3px;
+    }
+
+    .brand-names h2 span { color: var(--green); }
+    .brand-names p { font-size: 0.7rem; color: var(--sidebar-text); line-height: 1.2; }
+
+    .sidebar-nav {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .nav-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: #475569;
+      margin: 14px 8px 6px 8px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 9px 12px;
+      border-radius: 8px;
+      color: var(--sidebar-text);
+      text-decoration: none;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+    }
+
+    .nav-item:hover { background: var(--sidebar-hover); color: var(--sidebar-text-bright); }
+    .nav-item.active { background: var(--sidebar-active); color: #FFFFFF; font-weight: 600; }
+    .nav-item i { font-size: 0.9rem; width: 18px; text-align: center; }
+
+    .sidebar-footer {
+      padding: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .privacy-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .privacy-card:hover { background: rgba(255, 255, 255, 0.08); }
+    .privacy-card i { color: var(--green); font-size: 1.1rem; }
+    .privacy-card-content h5 { font-size: 0.78rem; color: #FFFFFF; font-weight: 600; }
+    .privacy-card-content p { font-size: 0.68rem; color: var(--sidebar-text); }
+
+    /* ================= MAIN CONTAINER ================= */
+    .main-wrapper {
+      flex: 1;
+      height: 100vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: #FFFFFF;
+      border-bottom: 1px solid var(--card-border);
+      padding: 14px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      flex-shrink: 0;
+    }
+
+    .welcome-text h1 { font-size: 1.2rem; font-weight: 700; }
+    .welcome-text p { font-size: 0.8rem; color: var(--text-muted); }
+
+    .header-controls { display: flex; align-items: center; gap: 16px; }
+
+    .date-dropdown {
+      background: #FFFFFF;
+      border: 1px solid var(--card-border);
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-main);
+      cursor: pointer;
+    }
+
+    .header-icon-btn {
+      position: relative;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      cursor: pointer;
+    }
+
+    .header-icon-btn .badge-dot {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--blue-primary);
+    }
+
+    .user-profile-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      background: #F8FAFC;
+      border: 1px solid var(--card-border);
+      padding: 5px 12px;
+      border-radius: 30px;
+      transition: 0.2s;
+    }
+
+    .user-profile-btn:hover { background: #EEF2F6; border-color: var(--blue-primary); }
+
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--blue-primary);
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .user-details h4 { font-size: 0.8rem; font-weight: 700; }
+    .user-details p { font-size: 0.68rem; color: var(--text-muted); }
+
+    .content-area {
+      padding: 24px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* KPI Cards */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+    }
+
+    .kpi-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.04);
+    }
+
+    .kpi-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      color: #FFFFFF;
+    }
+
+    .kpi-icon.blue { background: #2563EB; }
+    .kpi-icon.green { background: #10B981; }
+    .kpi-icon.purple { background: #8B5CF6; }
+    .kpi-icon.amber { background: #F59E0B; }
+    .kpi-icon.teal { background: #06B6D4; }
+
+    .kpi-body .kpi-label { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; }
+    .kpi-body .kpi-val { font-size: 1.25rem; font-weight: 800; color: var(--text-main); margin: 2px 0; }
+    .kpi-body .kpi-sub { font-size: 0.68rem; color: var(--green); font-weight: 600; display: flex; align-items: center; gap: 3px; }
+    .kpi-body .kpi-sub.neutral { color: var(--text-muted); }
+
+    /* Middle & Bottom Grids */
+    .grid-3-col {
+      display: grid;
+      grid-template-columns: 1.3fr 1.3fr 0.9fr;
+      gap: 16px;
+    }
+
+    .dash-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .card-title-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .card-title-bar h3 { font-size: 0.88rem; font-weight: 700; }
+
+    /* Donut Layout */
+    .donut-layout {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      height: 180px;
+    }
+
+    .donut-chart-box {
+      width: 150px;
+      height: 150px;
+      position: relative;
+    }
+
+    .donut-center-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .donut-center-text .num { font-size: 0.95rem; font-weight: 800; }
+    .donut-center-text .lbl { font-size: 0.65rem; color: var(--text-muted); }
+
+    .donut-legend {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.72rem;
+    }
+
+    .legend-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
+
+    .legend-row:hover { background: #F1F5F9; }
+    .legend-indicator { display: flex; align-items: center; gap: 6px; }
+    .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .legend-vals { font-weight: 600; color: var(--text-main); }
+
+    /* Follow ups list */
+    .followup-box { display: flex; flex-direction: column; gap: 10px; }
+
+    .followup-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: var(--body-bg);
+      border: 1px solid var(--card-border);
+      cursor: pointer;
+      transition: 0.15s;
+    }
+
+    .followup-item:hover { background: #EDF2F6; }
+    .followup-icon { font-size: 1.1rem; margin-right: 8px; }
+    .followup-meta h4 { font-size: 0.78rem; font-weight: 700; }
+    .followup-meta p { font-size: 0.68rem; color: var(--text-muted); }
+    .followup-rate { text-align: right; }
+    .followup-rate .rate-num { font-size: 0.85rem; font-weight: 700; color: var(--green); }
+    .followup-rate .rate-lbl { font-size: 0.65rem; color: var(--text-muted); }
+
+    /* Trainee Table Roster */
+    .roster-panel {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .roster-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .roster-header h3 { font-size: 0.95rem; font-weight: 700; }
+    .roster-header p { font-size: 0.75rem; color: var(--text-muted); }
+
+    .trainee-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+    }
+
+    .trainee-table th {
+      text-align: left;
+      padding: 10px 14px;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.68rem;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--card-border);
+      background: #F8FAFC;
+    }
+
+    .trainee-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--card-border);
+      vertical-align: middle;
+    }
+
+    .trainee-table tr:hover td {
+      background: #F8FAFC;
+    }
+
+    .badge-status {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .badge-verified { background: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; }
+
+    .btn-view-profile {
+      background: #EFF6FF;
+      color: var(--blue-primary);
+      border: 1px solid #BFDBFE;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+
+    .btn-view-profile:hover {
+      background: var(--blue-primary);
+      color: #FFFFFF;
+    }
+
+    /* ================= INTEGRATED TEST WIDGET STYLES ================= */
+    .quiz-card {
+      background: var(--quiz-card-bg);
+      color: #f8fafc;
+      width: 100%;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      border: 1px solid #334155;
+    }
+
+    .quiz-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #334155;
+      padding-bottom: 15px;
+    }
+
+    .quiz-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #f8fafc;
+    }
+
+    .quiz-progress {
+      font-size: 0.85rem;
+      color: #94a3b8;
+    }
+
+    .quiz-question-text {
+      font-size: 1rem;
+      margin-bottom: 18px;
+      line-height: 1.5;
+    }
+
+    .options-grid {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .quiz-option-btn {
+      background-color: #334155;
+      color: #f8fafc;
+      border: 2px solid transparent;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .quiz-option-btn:hover:not(:disabled) {
+      background-color: #475569;
+      border-color: var(--quiz-accent);
+    }
+
+    .quiz-option-btn.correct {
+      background-color: rgba(34, 197, 94, 0.2);
+      border-color: var(--quiz-correct);
+      color: #86efac;
+    }
+
+    .quiz-option-btn.incorrect {
+      background-color: rgba(239, 68, 68, 0.2);
+      border-color: var(--quiz-incorrect);
+      color: #fca5a5;
+    }
+
+    .quiz-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .quiz-score-tracker {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #94a3b8;
+    }
+
+    .quiz-next-btn {
+      background-color: var(--quiz-accent);
+      color: #ffffff;
+      border: none;
+      padding: 9px 18px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .quiz-next-btn:hover:not(:disabled) {
+      background-color: var(--quiz-accent-hover);
+    }
+
+    .quiz-next-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .quiz-results-screen {
+      text-align: left;
+      padding: 10px 0;
+    }
+
+    .quiz-results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #334155;
+      padding-bottom: 14px;
+      margin-bottom: 18px;
+    }
+
+    .quiz-results-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+
+    .gap-report-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .gap-box {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .gap-box h4 {
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .gap-box.lacking h4 { color: #fca5a5; }
+    .gap-box.strength h4 { color: #86efac; }
+
+    .gap-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .gap-item {
+      font-size: 0.82rem;
+      line-height: 1.4;
+      background: #1e293b;
+      padding: 10px;
+      border-radius: 6px;
+      border-left: 3px solid var(--quiz-incorrect);
+    }
+
+    .strength-item {
+      font-size: 0.82rem;
+      line-height: 1.4;
+      background: #1e293b;
+      padding: 10px;
+      border-radius: 6px;
+      border-left: 3px solid var(--quiz-correct);
+    }
+
+    .gap-item-title {
+      font-weight: 700;
+      color: #f8fafc;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .gap-item-desc {
+      color: #94a3b8;
+    }
+
+    .quiz-restart-btn {
+      background-color: var(--quiz-accent);
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    /* Pillars */
+    .pillars-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-top: 4px;
+    }
+
+    .pillar-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .pillar-card:hover { transform: translateY(-2px); border-color: var(--blue-primary); }
+    .pillar-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      background: #EFF6FF;
+      color: var(--blue-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.05rem;
+    }
+    .pillar-info h5 { font-size: 0.8rem; font-weight: 700; }
+    .pillar-info p { font-size: 0.68rem; color: var(--text-muted); }
+
+    /* Modal Styling for Data Modules */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.45);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .modal-card {
+      background: #FFFFFF;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 620px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+      overflow: hidden;
+      animation: modalSlide 0.25s ease-out;
+    }
+
+    @keyframes modalSlide {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .modal-header {
+      padding: 18px 24px;
+      background: #F8FAFC;
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h3 { font-size: 1rem; font-weight: 700; }
+    .modal-close-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-muted); }
+
+    .modal-body { padding: 24px; max-height: 75vh; overflow-y: auto; font-size: 0.85rem; }
+
+    .modal-stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .modal-stat-box {
+      background: #F8FAFC;
+      border: 1px solid var(--card-border);
+      padding: 12px;
+      border-radius: 8px;
+    }
+
+    .modal-stat-box h5 { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; }
+    .modal-stat-box p { font-size: 1.1rem; font-weight: 800; color: var(--text-main); }
+
+    .modal-footer {
+      padding: 14px 24px;
+      background: #F8FAFC;
+      border-top: 1px solid var(--card-border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .btn-secondary {
+      background: #FFFFFF;
+      border: 1px solid var(--card-border);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: var(--blue-primary);
+      color: #FFFFFF;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    @media (max-width: 1200px) {
+      .kpi-row { grid-template-columns: repeat(3, 1fr); }
+      .grid-3-col { grid-template-columns: 1fr; }
+      .pillars-row { grid-template-columns: 1fr 1fr; }
+      .gap-report-container { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ================= SIDEBAR ================= -->
+  <aside>
+    <div class="sidebar-brand" onclick="showInfoModal('TrackNxt Platform Identifier', 'Demo Info:<br>TrackNxt is an enterprise national outcomes framework designed to monitor skilling retention, salary growth, and career mobility across multi-state implementation partners.')">
+      <div class="brand-logo-wrap">
+        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M 52 14 A 38 38 0 1 0 74 72 A 38 38 0 0 0 46 14" stroke="#0F203C" stroke-width="7" stroke-linecap="round" fill="none"/>
+          <rect x="36" y="52" width="11" height="23" rx="2" fill="#0D7F6E"/>
+          <rect x="51" y="38" width="11" height="37" rx="2" fill="#2ECC71"/>
+          <circle cx="68" cy="27" r="5.5" fill="#0F203C"/>
+          <path d="M 64 36 C 64 36 67 43 69 53 L 75 51 C 72 40 76 33 80 20 C 72 26 66 32 64 36 Z" fill="#0F203C"/>
+          <path d="M 80 8 L 81.8 13.5 L 87.5 13.5 L 82.9 16.8 L 84.6 22.2 L 80 18.9 L 75.4 22.2 L 77.1 16.8 L 72.5 13.5 L 78.2 13.5 Z" fill="#F1C40F"/>
+        </svg>
+      </div>
+      <div class="brand-names">
+        <h2>Track<span>Nxt</span></h2>
+        <p>Skilling Outcomes &<br>Impact Measurement</p>
+      </div>
+    </div>
+
+    <div class="sidebar-nav">
+      <button class="nav-item active" onclick="activateNav(this); closeInfoModal()"><i class="fa-solid fa-chart-pie"></i> Dashboard</button>
+
+      <!-- TRACK & MANAGE CATEGORY -->
+      <div class="nav-label">Track & Manage</div>
+      <button class="nav-item" onclick="activateNav(this); scrollToRoster()"><i class="fa-regular fa-user"></i> Trainees</button>
+      <button class="nav-item" onclick="activateNav(this); loadModuleData('employers')"><i class="fa-solid fa-briefcase"></i> Employers</button>
+      <button class="nav-item" onclick="activateNav(this); loadModuleData('followups')"><i class="fa-regular fa-clock"></i> Follow-ups</button>
+      <button class="nav-item" onclick="activateNav(this); loadModuleData('assessments')"><i class="fa-regular fa-file-lines"></i> Assessments</button>
+      <button class="nav-item" onclick="activateNav(this); loadModuleData('certifications')"><i class="fa-solid fa-award"></i> Certifications</button>
+      <button class="nav-item" onclick="activateNav(this); loadModuleData('placements')"><i class="fa-solid fa-building-user"></i> Placements & Employment</button>
+      <button class="nav-item" onclick="activateNav(this); loadModuleData('selfEmp')"><i class="fa-solid fa-store"></i> Self-employment</button>
+      <button class="nav-item" onclick="activateNav(this); loadModuleData('apprenticeships')"><i class="fa-solid fa-gear"></i> Apprenticeships</button>
+
+      <!-- ANALYTICS & INSIGHTS CATEGORY -->
+      <div class="nav-label">Analytics & Insights</div>
+      <button class="nav-item" onclick="activateNav(this); loadModuleData('outcomeAnalytics')"><i class="fa-solid fa-chart-column"></i> Outcome Analytics</button>
+      <button class="nav-item" onclick="activateNav(this); loadModuleData('impactAnalytics')"><i class="fa-solid fa-chart-line"></i> Impact Analytics</button>
+      <button class="nav-item" onclick="activateNav(this); scrollToTest()"><i class="fa-solid fa-brain"></i> Skill Gap Analysis</button>
+      <button class="nav-item" onclick="activateNav(this); loadModuleData('reports')"><i class="fa-solid fa-file-lines"></i> Reports</button>
+
+      <!-- ADMIN & SETTINGS CATEGORY -->
+      <div class="nav-label">Admin & Settings</div>
+      <button class="nav-item" onclick="activateNav(this); loadModuleData('programmes')"><i class="fa-solid fa-graduation-cap"></i> Programmes / Courses</button>
+      <button class="nav-item" onclick="activateNav(this); loadModuleData('providers')"><i class="fa-solid fa-landmark"></i> Providers</button>
+      <button class="nav-item" onclick="activateNav(this); loadModuleData('usersRoles')"><i class="fa-solid fa-users-gear"></i> Users & Roles</button>
+      <button class="nav-item" onclick="activateNav(this); loadModuleData('dataQuality')"><i class="fa-solid fa-database"></i> Data Quality</button>
+      <button class="nav-item" onclick="activateNav(this); loadModuleData('settings')"><i class="fa-solid fa-sliders"></i> Settings</button>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="privacy-card" onclick="showInfoModal('DPDP Compliance Status', 'Demo Info:<br>TrackNxt operates under strict Digital Personal Data Protection (DPDP) Act guidelines. All trainee identifiers are tokenized, purpose-specific consent is logged, and employer validation is conducted via encrypted links.')">
+        <i class="fa-solid fa-shield-halved"></i>
+        <div class="privacy-card-content">
+          ##### Privacy & Consent
+          <p>DPDP Act Verified</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ================= MAIN BODY ================= -->
+  <div class="main-wrapper" id="mainContainer">
+    <header>
+      <div class="welcome-text">
+        <h1 id="topGreeting">Welcome back, Amaan! 👋</h1>
+        <p id="topSubtitle">Track outcomes. Measure impact. Improve livelihoods.</p>
+      </div>
+
+      <div class="header-controls">
+        <div class="date-dropdown" onclick="cycleFiscalYear()">
+          <i class="fa-regular fa-calendar"></i>
+          <span id="dateLabel">01 Apr 2024 - 31 Mar 2025</span>
+          <i class="fa-solid fa-chevron-down" style="font-size: 0.7rem;"></i>
+        </div>
+
+        <button class="header-icon-btn" onclick="showInfoModal('System Notifications & Alerts', 'Demo Info:<br>● 1,294 high-priority 3-month follow-up surveys require assisted calling.<br>● 382 employer verification offer letters pending review.<br>● New batch added: Solar PV Technician Batch 2026-B.')">
+          <i class="fa-regular fa-bell"></i>
+          <span class="badge-dot"></span>
+        </button>
+
+        <div class="user-profile-btn" onclick="openProfileModal()">
+          <div class="user-avatar" id="avatarInitial">A</div>
+          <div class="user-details">
+            <h4 id="profileNameDisplay">Amaan</h4>
+            <p id="profileRoleDisplay">CS Student & Developer</p>
+          </div>
+          <i class="fa-solid fa-pen-to-square" style="font-size: 0.75rem; color: var(--text-muted); margin-left: 4px;"></i>
+        </div>
+      </div>
+    </header>
+
+    <div class="content-area">
+
+      <!-- KPI Summary Cards -->
+      <section class="kpi-row">
+        <div class="kpi-card" onclick="showInfoModal('Total Trainees Cohort', 'Demo Info:<br>Total certified and tracked students across 14 state skill development missions (SSDMs).')">
+          <div class="kpi-icon blue"><i class="fa-solid fa-users"></i></div>
+          <div class="kpi-body">
+            <div class="kpi-label">Total Trainees</div>
+            <div class="kpi-val" id="kpiTotal">12,84,532</div>
+            <div class="kpi-sub"><i class="fa-solid fa-arrow-up"></i> 12.6% vs last year</div>
+          </div>
+        </div>
+
+        <div class="kpi-card" onclick="showInfoModal('Placed & Self-Employed Analysis', 'Demo Info:<br>Comprises 3.45L formal placements, 1.92L informal wage earners, and 1.23L verified entrepreneurs.')">
+          <div class="kpi-icon green"><i class="fa-solid fa-briefcase"></i></div>
+          <div class="kpi-body">
+            <div class="kpi-label">Placed / Self-employed</div>
+            <div class="kpi-val" id="kpiPlaced">7,65,430</div>
+            <div class="kpi-sub neutral">59.6% of tracked trainees</div>
+          </div>
+        </div>
+
+        <div class="kpi-card" onclick="showInfoModal('Retention Rate Breakdown', 'Demo Info:<br>Trainees actively employed in Month 6 post-placement. Highest retention in Healthcare (88%) and IT (82%).')">
+          <div class="kpi-icon purple"><i class="fa-solid fa-chart-line"></i></div>
+          <div class="kpi-body">
+            <div class="kpi-label">Employment Retention (6+ mos)</div>
+            <div class="kpi-val" id="kpiRetention">72.3%</div>
+            <div class="kpi-sub"><i class="fa-solid fa-arrow-up"></i> 5.7% vs last year</div>
+          </div>
+        </div>
+
+        <div class="kpi-card" onclick="showInfoModal('Wage Growth Trends', 'Demo Info:<br>Average baseline exit wage of ₹11,200 rises to ₹20,400 by month 36.')">
+          <div class="kpi-icon amber"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+          <div class="kpi-body">
+            <div class="kpi-label">Median Wage (Monthly)</div>
+            <div class="kpi-val" id="kpiWage">₹ 18,650</div>
+            <div class="kpi-sub"><i class="fa-solid fa-arrow-up"></i> 8.4% vs last year</div>
+          </div>
+        </div>
+
+        <div class="kpi-card" onclick="showInfoModal('Certifications Issued', 'Demo Info:<br>NSDC and NCVET authenticated certificates issued with QR codes.')">
+          <div class="kpi-icon teal"><i class="fa-solid fa-award"></i></div>
+          <div class="kpi-body">
+            <div class="kpi-label">Certifications Issued</div>
+            <div class="kpi-val" id="kpiCert">10,24,389</div>
+            <div class="kpi-sub"><i class="fa-solid fa-arrow-up"></i> 15.3% vs last year</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Row 2: Donut Chart and Follow-ups -->
+      <section class="grid-3-col">
+        <div class="dash-card">
+          <div class="card-title-bar">
+            <h3>Outcomes Overview (All Programmes)</h3>
+          </div>
+          <div class="donut-layout">
+            <div class="donut-chart-box">
+              <canvas id="outcomesChart"></canvas>
+              <div class="donut-center-text">
+                <div class="num" id="donutCenterNum">12,84,532</div>
+                <div class="lbl">Total Trainees</div>
+              </div>
+            </div>
+            <div class="donut-legend">
+              <div class="legend-row" onclick="loadModuleData('placements')">
+                <div class="legend-indicator"><span class="legend-dot" style="background:#10B981;"></span> Employed (Formal)</div>
+                <span class="legend-vals">3,45,231 (26.9%)</span>
+              </div>
+              <div class="legend-row" onclick="loadModuleData('placements')">
+                <div class="legend-indicator"><span class="legend-dot" style="background:#3B82F6;"></span> Employed (Informal)</div>
+                <span class="legend-vals">1,92,184 (15.0%)</span>
+              </div>
+              <div class="legend-row" onclick="loadModuleData('selfEmp')">
+                <div class="legend-indicator"><span class="legend-dot" style="background:#8B5CF6;"></span> Self-Employed</div>
+                <span class="legend-vals">1,23,450 (9.6%)</span>
+              </div>
+              <div class="legend-row" onclick="loadModuleData('outcomeAnalytics')">
+                <div class="legend-indicator"><span class="legend-dot" style="background:#EF4444;"></span> Unemployed</div>
+                <span class="legend-vals">2,10,000 (16.3%)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Follow-up Surveys -->
+        <div class="dash-card">
+          <div class="card-title-bar">
+            <h3>Longitudinal Follow-up Survey Completion</h3>
+          </div>
+          <div class="followup-box">
+            <div class="followup-item" onclick="loadModuleData('followups')">
+              <div style="display:flex; align-items:center;">
+                <i class="fa-solid fa-circle-check followup-icon" style="color:#10B981;"></i>
+                <div class="followup-meta">
+                  <h4>Month 3 Survey</h4>
+                  <p>1,22,400 Responses Logged</p>
+                </div>
+              </div>
+              <div class="followup-rate">
+                <div class="rate-num">84.2%</div>
+                <div class="rate-lbl">Completed</div>
+              </div>
+            </div>
+
+            <div class="followup-item" onclick="loadModuleData('followups')">
+              <div style="display:flex; align-items:center;">
+                <i class="fa-solid fa-circle-check followup-icon" style="color:#3B82F6;"></i>
+                <div class="followup-meta">
+                  <h4>Month 6 Survey</h4>
+                  <p>98,150 Responses Logged</p>
+                </div>
+              </div>
+              <div class="followup-rate">
+                <div class="rate-num">76.5%</div>
+                <div class="rate-lbl">Completed</div>
+              </div>
+            </div>
+
+            <div class="followup-item" onclick="loadModuleData('followups')">
+              <div style="display:flex; align-items:center;">
+                <i class="fa-solid fa-clock followup-icon" style="color:#F59E0B;"></i>
+                <div class="followup-meta">
+                  <h4>Month 12 Survey</h4>
+                  <p>64,300 Responses Logged</p>
+                </div>
+              </div>
+              <div class="followup-rate">
+                <div class="rate-num">62.1%</div>
+                <div class="rate-lbl">In Progress</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Trainee Roster Table Section -->
+      <section class="roster-panel" id="rosterSection">
+        <div class="roster-header">
+          <div>
+            <h3>Recent Trainee Placement Verification</h3>
+            <p>Real-time audit log of candidate status post-graduation</p>
+          </div>
+          <button class="btn-primary" onclick="showInfoModal('Export Roster Data', 'Demo Info: Exporting CSV roster containing 12,84,532 records synced with DigiLocker verification badges.')">Export CSV</button>
+        </div>
+
+        <table class="trainee-table">
+          <thead>
+            <tr>
+              <th>Candidate Name</th>
+              <th>Course / Sector</th>
+              <th>Training Provider</th>
+              <th>Status</th>
+              <th>Verified Monthly Wage</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Amaan</strong></td>
+              <td>C, C++ & Web Architecture</td>
+              <td>Computer Science Dept.</td>
+              <td><span class="badge-status badge-verified"><i class="fa-solid fa-circle-check"></i> Active Student</span></td>
+              <td>--</td>
+              <td><button class="btn-view-profile" onclick="showInfoModal('Amaan Profile', 'Candidate ID: CS-2026-AM<br>Focus: C/C++, Assembly (8085/8086), HTML/CSS, JS, & DBMS.')">View Details</button></td>
+            </tr>
+            <tr>
+              <td><strong>Rahul Sharma</strong></td>
+              <td>Solar PV Technician (Green Jobs)</td>
+              <td>SkillTech Academy, Delhi</td>
+              <td><span class="badge-status badge-verified"><i class="fa-solid fa-circle-check"></i> Placed (Formal)</span></td>
+              <td>₹ 19,500</td>
+              <td><button class="btn-view-profile" onclick="showInfoModal('Rahul Sharma Profile', 'Candidate ID: TN-88491<br>Employer: Tata Power Solar')">View Details</button></td>
+            </tr>
+            <tr>
+              <td><strong>Priya Patel</strong></td>
+              <td>General Duty Assistant (Healthcare)</td>
+              <td>Apex Health Skill Center, GJ</td>
+              <td><span class="badge-status badge-verified"><i class="fa-solid fa-circle-check"></i> Placed (Formal)</span></td>
+              <td>₹ 17,200</td>
+              <td><button class="btn-view-profile" onclick="showInfoModal('Priya Patel Profile', 'Candidate ID: TN-77102<br>Employer: Apollo Hospitals')">View Details</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- INTEGRATED SKILL GAP DIAGNOSTIC TEST SECTION -->
+      <section id="quizSection">
+        <div class="quiz-card" id="quiz-card">
+          <div class="quiz-header">
+            <span class="quiz-title"><i class="fa-solid fa-brain" style="color: var(--quiz-accent); margin-right: 8px;"></i> Skill Gap Diagnostic Test</span>
+            <span class="quiz-progress" id="progress">Question 1 of 5</span>
+          </div>
+
+          <div id="quiz-body">
+            <div class="quiz-question-text" id="question">Loading diagnostic question...</div>
+            <div class="options-grid" id="options"></div>
+            
+            <div class="quiz-footer">
+              <div class="quiz-score-tracker" id="score">Score: 0</div>
+              <button class="quiz-next-btn" id="next-btn" onclick="nextQuestion()" disabled>Next Question</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Strategic Pillars -->
+      <section class="pillars-row">
+        <div class="pillar-card" onclick="loadModuleData('dataQuality')">
+          <div class="pillar-icon"><i class="fa-solid fa-database"></i></div>
+          <div class="pillar-info">
+            <h5>Data Integrity</h5>
+            <p>100% Unique Profiles</p>
+          </div>
+        </div>
+
+        <div class="pillar-card" onclick="showInfoModal('Privacy First Pillar', 'Tokenized candidate records strictly compliant with DPDP Act 2023.')">
+          <div class="pillar-icon"><i class="fa-solid fa-lock"></i></div>
+          <div class="pillar-info">
+            <h5>Privacy & Security</h5>
+            <p>DPDP Act Compliant</p>
+          </div>
+        </div>
+
+        <div class="pillar-card" onclick="loadModuleData('placements')">
+          <div class="pillar-icon"><i class="fa-solid fa-robot"></i></div>
+          <div class="pillar-info">
+            <h5>Auto-Verification</h5>
+            <p>Bank & System Integration</p>
+          </div>
+        </div>
+
+        <div class="pillar-card" onclick="loadModuleData('impactAnalytics')">
+          <div class="pillar-icon"><i class="fa-solid fa-timeline"></i></div>
+          <div class="pillar-info">
+            <h5>Longitudinal Scale</h5>
+            <p>3-Year Career Pathing</p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- ================= MODAL DIALOGS ================= -->
+  <div class="modal-overlay" id="infoModalOverlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modalTitle">System Information</h3>
+        <button class="modal-close-btn" onclick="closeInfoModal()">&times;</button>
+      </div>
+      <div class="modal-body" id="modalBodyText">
+        Information text content...
+      </div>
+      <div class="modal-footer">
+        <button class="btn-primary" onclick="closeInfoModal()">Acknowledge</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="profileModalOverlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>User Profile & Preferences</h3>
+        <button class="modal-close-btn" onclick="closeProfileModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group" style="margin-bottom:12px;">
+          <label style="font-weight:600; display:block; margin-bottom:4px;">Full Name</label>
+          <input type="text" id="inputProfileName" value="Amaan" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:6px;" />
+        </div>
+        <div class="form-group">
+          <label style="font-weight:600; display:block; margin-bottom:4px;">Assigned Role</label>
+          <select id="inputProfileRole" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:6px;">
+            <option value="CS Student & Developer">CS Student & Developer</option>
+            <option value="National Admin">National Admin</option>
+            <option value="State Mission Director">State Mission Director</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeProfileModal()">Cancel</button>
+        <button class="btn-primary" onclick="saveProfileChanges()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= JAVASCRIPT LOGIC ================= -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const ctx = document.getElementById('outcomesChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Employed (Formal)', 'Employed (Informal)', 'Self-Employed', 'Unemployed'],
+          datasets: [{
+            data: [345231, 192184, 123450, 210000],
+            backgroundColor: ['#10B981', '#3B82F6', '#8B5CF6', '#EF4444'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          cutout: '75%',
+          plugins: { legend: { display: false } },
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      });
+    });
+
+    function activateNav(btn) {
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    function scrollToRoster() {
+      document.getElementById('rosterSection').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function scrollToTest() {
+      document.getElementById('quizSection').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function cycleFiscalYear() {
+      const label = document.getElementById('dateLabel');
+      if (label.innerText.includes('2024')) {
+        label.innerText = '01 Apr 2025 - 31 Mar 2026';
+      } else {
+        label.innerText = '01 Apr 2024 - 31 Mar 2025';
+      }
+    }
+
+    function showInfoModal(title, content) {
+      document.getElementById('modalTitle').innerText = title;
+      document.getElementById('modalBodyText').innerHTML = content;
+      document.getElementById('infoModalOverlay').style.display = 'flex';
+    }
+
+    function closeInfoModal() {
+      document.getElementById('infoModalOverlay').style.display = 'none';
+    }
+
+    function openProfileModal() {
+      document.getElementById('profileModalOverlay').style.display = 'flex';
+    }
+
+    function closeProfileModal() {
+      document.getElementById('profileModalOverlay').style.display = 'none';
+    }
+
+    function saveProfileChanges() {
+      const newName = document.getElementById('inputProfileName').value;
+      const newRole = document.getElementById('inputProfileRole').value;
+      
+      document.getElementById('profileNameDisplay').innerText = newName;
+      document.getElementById('profileRoleDisplay').innerText = newRole;
+      document.getElementById('topGreeting').innerText = `Welcome back, ${newName}! 👋`;
+      
+      const initials = newName.split(' ').map(n => n[0]).join('').toUpperCase();
+      document.getElementById('avatarInitial').innerText = initials || 'A';
+
+      closeProfileModal();
+    }
+
+    // Dynamic Module Data Handler for Sidebar Links
+    function loadModuleData(moduleKey) {
+      const moduleMap = {
+        /* TRACK & MANAGE */
+        employers: {
+          title: "Employer Partners & Verification Ledger",
+          body: `
+            <div class="modal-stat-grid">
+              <div class="modal-stat-box"><h5>Registered Employers</h5><p>4,120 Companies</p></div>
+              <div class="modal-stat-box"><h5>Pending Verifications</h5><p>382 Offer Letters</p></div>
+              <div class="modal-stat-box"><h5>Top Recruiting Sector</h5><p>Green Jobs & Solar</p></div>
+              <div class="modal-stat-box"><h5>Verification Rate</h5><p>94.8% Validated</p></div>
+            </div>
+            <p><strong>Trainee Analytics Insight:</strong> 3,45,231 trainees are actively employed in formal companies with auto-verified monthly PF/payroll deposits.</p>
+          `
+        },
+        followups: {
+          title: "Longitudinal Follow-up Survey Analytics",
+          body: `
+            <div class="modal-stat-grid">
+              <div class="modal-stat-box"><h5>Month 3 Survey</h5><p>84.2% Completed</p></div>
+              <div class="modal-stat-box"><h5>Month 6 Survey</h5><p>76.5% Completed</p></div>
+              <div class="modal-stat-box"><h5>Month 12 Survey</h5><p>62.1% In Progress</p></div>
+              <div class="modal-stat-box"><h5>Response Channel</h5><p>WhatsApp & IVR</p></div>
+            </div>
+            <p><strong>Trainee Analytics Insight:</strong> Automated follow-ups monitor wage escalation and career stability over a 36-month tracking lifecycle.</p>
+          `
+        },
+        assessments: {
+          title: "Examination & SSC Assessment Records",
+          body: `
+            <div class="modal-stat-grid">
+              <div class="modal-stat-box"><h5>Assessed Trainees</h5><p>11,40,200 Candidates</p></div>
+              <div class="modal-stat-box"><h5>Pass Rate</h5><p>89.8% Passed</p></div>
+              <div class="modal-stat-box"><h5>SSC Partners</h5><p>32 SSC Councils</p></div>
+              <div class="modal-stat-box"><h5>Practical Avg</h5><p>78.4 / 100 Marks</p></div>
+            </div>
+            <p><strong>Trainee Analytics Insight:</strong> Assessment scores directly correlate with initial employment placement speed and baseline monthly entry wage.</p>
+          `
+        },
+        certifications: {
+          title: "NSDC / DigiLocker Certification Hub",
+          body: `
+            <div class="modal-stat-grid">
+              <div class="modal-stat-box"><h5>Certificates Issued</h5><p>10,24,389 Issued</p></div>
+              <div class="modal-stat-box"><h5>DigiLocker Synced</h5><p>99.2% Digital Sync</p></div>
+              <div class="modal-stat-box"><h5>QR Verifications</h5><p>1.4M Scans Logged</p></div>
+              <div class="modal-stat-box"><h5>Pending Claims</h5><p>15,840 Records</p></div>
+            </div>
+            <p><strong>Trainee Analytics Insight:</strong> All verified certifications include tamper-proof QR tags synced to government DigiLocker repositories.</p>
+          `
+        },
+        placements: {
+          title: "Placement & Wage Ledger",
+          body: `
+            <div class="modal-stat-grid">
+              <div class="modal-stat-box"><h5>Formal Placements</h5><p>3,45,231 Trainees</p></div>
+              <div class="modal-stat-box"><h5>Informal Wage Roles</h5><p>1,92,184 Trainees</p></div>
+              <div class="modal-stat-box"><h5>Average Entry Salary</h5><p>₹ 18,650 / Mo</p></div>
+              <div class="modal-stat-box"><h5>Retention (6+ Mos)</h5><p>72.3% Retained</p></div>
+            </div>
+            <p><strong>Trainee Analytics Insight:</strong> Real-time salary audits confirm a 8.4% wage increase across all technical course tracks compared to prior fiscal year data.</p>
+          `
+        },
+        selfEmp: {
+          title: "Micro-Entrepreneurship & Self-Employment",
+          body: `
+            <div class="modal-stat-grid">
+              <div class="modal-stat-box"><h5>Self-Employed Trainees</h5><p>1,23,450 Candidates</p></div>
+              <div class="modal-stat-box"><h5>MUDRA Loans Approved</h5><p>42,100 Micro-Loans</p></div>
+              <div class="modal-stat-box"><h5>Avg Enterprise Income</h5><p>₹ 22,400 / Mo</p></div>
+              <div class="modal-stat-box"><h5>1-Year Survival Rate</h5><p>81.4% Active</p></div>
+            </div>
+            <p><strong>Trainee Analytics Insight:</strong> Entrepreneurship outcomes are tracked by verifying registered micro-enterprise GST/Udyam credentials.</p>
+          `
+        },
+        apprenticeships: {
+          title: "NAPS Apprenticeship Management",
+          body: `
+            <div class="modal-stat-grid">
+              <div class="modal-stat-box"><h5>Active Apprentices</h5><p>84,200 Trainees</p></div>
+              <div class="modal-stat-box"><h5>Stipend Reimbursed</h5><p>₹ 1,500 / Trainee</p></div>
+              <div class="modal-stat-box"><h5>NAPS Contracts</h5><p>62,000 Active</p></div>
+              <div class="modal-stat-box"><h5>Conversion to Formal</h5><p>64.5% Hired</p></div>
+            </div>
+            <p><strong>Trainee Analytics Insight:</strong> NAPS apprenticeships offer direct work-integrated learning, leading to a 64.5% conversion rate into full-time roles.</p>
+          `
+        },
+
+        /* ANALYTICS & INSIGHTS */
+        outcomeAnalytics: {
+          title: "Cohort Outcome Analytics Overview",
+          body: `
+            <div class="modal-stat-grid">
+              <div class="modal-stat-box"><h5>Total Tracked Cohort</h5><p>12,84,532 Trainees</p></div>
+              <div class="modal-stat-box"><h5>Overall Outcome Rate</h5><p>59.6% Employed</p></div>
+              <div class="modal-stat-box"><h5>Seeking Employment</h5><p>2,10,000 Trainees</p></div>
+              <div class="modal-stat-box"><h5>Top Sector Growth</h5><p>IT & Healthcare</p></div>
+            </div>
+            <p><strong>Trainee Analytics Insight:</strong> Multi-state data analysis highlights high employment absorption in technology, renewable energy, and allied healthcare trades.</p>
+          `
+        },
+        impactAnalytics: {
+          title: "Longitudinal Impact & Salary Trajectory",
+          body: `
+            <div class="modal-stat-grid">
+              <div class="modal-stat-box"><h5>Baseline Exit Wage</h5><p>₹ 11,200 / Mo</p></div>
+              <div class="modal-stat-box"><h5>36-Month Wage Peak</h5><p>₹ 20,400 / Mo</p></div>
+              <div class="modal-stat-box"><h5>3-Year Salary Increase</h5><p>+ 82.1% Growth</p></div>
+              <div class="modal-stat-box"><h5>Lifetime Return Index</h5><p>4.8x Return</p></div>
+            </div>
+            <p><strong>Trainee Analytics Insight:</strong> Trainees demonstrate a continuous income growth curve, doubling their baseline earnings within 3 years of program graduation.</p>
+          `
+        },
+        reports: {
+          title: "Statutory & Government Compliance Reports",
+          body: `
+            <div class="modal-stat-grid">
+              <div class="modal-stat-box"><h5>Generated Reports</h5><p>1,240 Formats</p></div>
+              <div class="modal-stat-box"><h5>Audited Centers</h5><p>100% Verified</p></div>
+              <div class="modal-stat-box"><h5>Fund Disbursement</h5><p>₹ 142 Cr Released</p></div>
+              <div class="modal-stat-box"><h5>Compliance Rating</h5><p>99.4% Compliant</p></div>
+            </div>
+            <p><strong>Trainee Analytics Insight:</strong> Automated statutory exports provide real-time candidate verification for state and central funding ministries.</p>
+          `
+        },
+
+        /* ADMIN & SETTINGS */
+        programmes: {
+          title: "Training Programmes & Qualification Framework",
+          body: `
+            <div class="modal-stat-grid">
+              <div class="modal-stat-box"><h5>Active Courses</h5><p>148 Courses</p></div>
+              <div class="modal-stat-box"><h5>National QPs / NOS</h5><p>320 Modules</p></div>
+              <div class="modal-stat-box"><h5>Average Duration</h5><p>3 - 6 Months</p></div>
+              <div class="modal-stat-box"><h5>Placement Target</h5><p>70% Minimum</p></div>
+            </div>
+            <p><strong>Trainee Analytics Insight:</strong> Courses are regularly aligned with market demand to maintain skill relevance and high graduate placement rates.</p>
+          `
+        },
+        providers: {
+          title: "Certified Training Provider Directory",
+          body: `
+            <div class="modal-stat-grid">
+              <div class="modal-stat-box"><h5>Verified Providers</h5><p>850 Training Centers</p></div>
+              <div class="modal-stat-box"><h5>Certified Instructors</h5><p>4,200 Trainers</p></div>
+              <div class="modal-stat-box"><h5>Lab Quality Index</h5><p>4.6 / 5.0 Rating</p></div>
+              <div class="modal-stat-box"><h5>Audit Grade</h5><p>Grade A (88%)</p></div>
+            </div>
+            <p><strong>Trainee Analytics Insight:</strong> Provider centers undergo regular automated lab and instructor capability audits to guarantee quality standards.</p>
+          `
+        },
+        usersRoles: {
+          title: "Users, Access & Role Management",
+          body: `
+            <div class="modal-stat-grid">
+              <div class="modal-stat-box"><h5>Active Administrators</h5><p>1,420 Users</p></div>
+              <div class="modal-stat-box"><h5>State Directors</h5><p>28 Accounts</p></div>
+              <div class="modal-stat-box"><h5>Assessor Logins</h5><p>650 Active</p></div>
+              <div class="modal-stat-box"><h5>Access Level</h5><p>Role-Based RBAC</p></div>
+            </div>
+            <p><strong>Trainee Analytics Insight:</strong> Granular permissions enforce security and data protection across national and regional center managers.</p>
+          `
+        },
+        dataQuality: {
+          title: "Data Quality & Deduplication Operations",
+          body: `
+            <div class="modal-stat-grid">
+              <div class="modal-stat-box"><h5>Total Profiles Analyzed</h5><p>12,84,532 Profiles</p></div>
+              <div class="modal-stat-box"><h5>Duplicate Records</h5><p>0% (100% Unique)</p></div>
+              <div class="modal-stat-box"><h5>Tokenized Identity</h5><p>DPDP Compliant</p></div>
+              <div class="modal-stat-box"><h5>Quality Index</h5><p>99.8% Clean Data</p></div>
+            </div>
+            <p><strong>Trainee Analytics Insight:</strong> Automated deduplication safeguards profile uniqueness across multi-state skilling initiatives.</p>
+          `
+        },
+        settings: {
+          title: "Platform Configuration & API Gateways",
+          body: `
+            <div class="modal-stat-grid">
+              <div class="modal-stat-box"><h5>API Connectors</h5><p>DigiLocker, PF, Bank</p></div>
+              <div class="modal-stat-box"><h5>SMS / WhatsApp</h5><p>Active Gateways</p></div>
+              <div class="modal-stat-box"><h5>System Uptime</h5><p>99.9% Uptime</p></div>
+              <div class="modal-stat-box"><h5>Encryption Standard</h5><p>AES-256 / TLS 1.3</p></div>
+            </div>
+            <p><strong>Trainee Analytics Insight:</strong> Integrations enable direct, automated trainee verification without manual paperwork overhead.</p>
+          `
+        }
+      };
+
+      const info = moduleMap[moduleKey];
+      if (info) {
+        showInfoModal(info.title, info.body);
+      }
+    }
+
+    // Diagnostic Test Data
+    const testData = [
+      {
+        domain: "Data Structures & Algorithms",
+        skillCategory: "C Linked List Traversal",
+        question: "1. In C programming, what condition indicates that a singly linked list traversal has reached the end of the list?",
+        options: [
+          "ptr->next == NULL",
+          "ptr == 0x00",
+          "ptr->data == -1",
+          "sizeof(ptr) == 0"
+        ],
+        correct: 0,
+        gapDescription: "Needs refresher on pointer termination conditions and Singly Linked List memory structure traversal in C."
+      },
+      {
+        domain: "Microprocessor Architecture",
+        skillCategory: "8085 Assembly Operations",
+        question: "2. When computing a Fibonacci series on an 8085 microprocessor simulator, which instruction adds register B to the accumulator with carry considerations?",
+        options: [
+          "ADD B",
+          "ADC B",
+          "INR B",
+          "ADI B, 01H"
+        ],
+        correct: 0,
+        gapDescription: "Lacks clarity on 8085 Assembly instruction sets (ADD vs ADC flag behavior) for multi-register arithmetic operations."
+      },
+      {
+        domain: "C++ Object-Oriented Programming",
+        skillCategory: "Abstract Classes & Pure Virtual Methods",
+        question: "3. In C++ Object-Oriented Programming, what occurs when a class contains at least one pure virtual function (e.g., `virtual void draw() = 0;`)?",
+        options: [
+          "The class becomes an abstract class and cannot be directly instantiated",
+          "The class cannot be inherited by any derived class",
+          "All member variables automatically become private",
+          "The function is executed during object destruction"
+        ],
+        correct: 0,
+        gapDescription: "Requires strengthening in Object-Oriented polymorphism, abstract class rules, and pure virtual method implementation."
+      },
+      {
+        domain: "Version Control Systems",
+        skillCategory: "Git Workspace Management",
+        question: "4. In Git version control, which command discards changes in the working directory or temporarily stores uncommitted changes without losing work?",
+        options: [
+          "git stash",
+          "git reset --hard",
+          "git revert HEAD",
+          "git clean -f"
+        ],
+        correct: 0,
+        gapDescription: "Needs practice with Git stash/reset workflows to manage local working directory modifications safely."
+      },
+      {
+        domain: "Web Development / Scripting",
+        skillCategory: "JavaScript Event Listener Binding",
+        question: "5. In JavaScript DOM manipulation, which method is recommended to attach multiple event listeners to a UI button without overwriting existing handlers?",
+        options: [
+          "element.onclick = function()",
+          "element.addEventListener('click', handler)",
+          "element.attachEvent('onclick', handler)",
+          "element.setEventListener('click', handler)"
+        ],
+        correct: 1,
+        gapDescription: "Requires knowledge update on modern DOM Event handling APIs (`addEventListener`) vs inline property binding."
+      }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+    let selectedOption = null;
+    let skillGapsIdentified = [];
+    let strengthsIdentified = [];
+
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const progressEl = document.getElementById("progress");
+    const scoreEl = document.getElementById("score");
+    const nextBtn = document.getElementById("next-btn");
+    const quizBody = document.getElementById("quiz-body");
+
+    function loadQuestion() {
+      selectedOption = null;
+      nextBtn.disabled = true;
+
+      const current = testData[currentQuestion];
+      progressEl.innerText = `Question ${currentQuestion + 1} of ${testData.length}`;
+      questionEl.innerText = current.question;
+      optionsEl.innerHTML = "";
+
+      current.options.forEach((option, index) => {
+        const button = document.createElement("button");
+        button.classList.add("quiz-option-btn");
+        button.innerText = option;
+        button.onclick = () => selectOption(index, button);
+        optionsEl.appendChild(button);
+      });
+    }
+
+    function selectOption(index, button) {
+      if (selectedOption !== null) return; 
+
+      selectedOption = index;
+      const current = testData[currentQuestion];
+      const buttons = optionsEl.children;
+
+      if (index === current.correct) {
+        button.classList.add("correct");
+        score++;
+        scoreEl.innerText = `Score: ${score}`;
+        strengthsIdentified.push({
+          category: current.skillCategory,
+          domain: current.domain
+        });
+      } else {
+        button.classList.add("incorrect");
+        buttons[current.correct].classList.add("correct");
+        skillGapsIdentified.push({
+          category: current.skillCategory,
+          domain: current.domain,
+          gap: current.gapDescription
+        });
+      }
+
+      Array.from(buttons).forEach(btn => btn.disabled = true);
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestion++;
+      if (currentQuestion < testData.length) {
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+      progressEl.innerText = "Assessment Complete";
+      
+      let lackingHtml = "";
+      if (skillGapsIdentified.length > 0) {
+        skillGapsIdentified.forEach(item => {
+          lackingHtml += `
+            <li class="gap-item">
+              <span class="gap-item-title"><i class="fa-solid fa-triangle-exclamation" style="color:#ef4444; margin-right:4px;"></i> ${item.category} (${item.domain})</span>
+              <span class="gap-item-desc">${item.gap}</span>
+            </li>
+          `;
+        });
+      } else {
+        lackingHtml = `<p style="font-size: 0.85rem; color: #86efac; padding: 10px;">🎉 Outstanding! No critical technical skill gaps detected in this evaluation.</p>`;
+      }
+
+      let strengthHtml = "";
+      if (strengthsIdentified.length > 0) {
+        strengthsIdentified.forEach(item => {
+          strengthHtml += `
+            <li class="strength-item">
+              <span class="gap-item-title"><i class="fa-solid fa-circle-check" style="color:#22c55e; margin-right:4px;"></i> ${item.category}</span>
+              <span class="gap-item-desc">Demonstrates required proficiency in ${item.domain}.</span>
+            </li>
+          `;
+        });
+      } else {
+        strengthHtml = `<p style="font-size: 0.85rem; color: #fca5a5; padding: 10px;">No core competencies verified in this run. Targeted upskilling recommended.</p>`;
+      }
+
+      const percentage = Math.round((score / testData.length) * 100);
+      let summaryBadgeClass = percentage >= 80 ? "#22c55e" : percentage >= 50 ? "#f59e0b" : "#ef4444";
+
+      quizBody.innerHTML = `
+        <div class="quiz-results-screen">
+          <div class="quiz-results-header">
+            <div>
+              <h2 class="quiz-results-title">Skill Gap Diagnostic Report</h2>
+              <p style="font-size:0.8rem; color:#94a3b8;">Automated proficiency analysis based on candidate responses</p>
+            </div>
+            <div style="text-align:right;">
+              <span style="font-size:1.2rem; font-weight:800; color:${summaryBadgeClass}">${score} / ${testData.length}</span>
+              <span style="font-size:0.75rem; color:#94a3b8; display:block;">(${percentage}% Score)</span>
+            </div>
+          </div>
+
+          <div class="gap-report-container">
+            <div class="gap-box lacking">
+              <h4><i class="fa-solid fa-circle-xmark"></i> Identified Skill Gaps (${skillGapsIdentified.length})</h4>
+              <ul class="gap-list">
+                ${lackingHtml}
+              </ul>
+            </div>
+
+            <div class="gap-box strength">
+              <h4><i class="fa-solid fa-award"></i> Verified Competencies (${strengthsIdentified.length})</h4>
+              <ul class="gap-list">
+                ${strengthHtml}
+              </ul>
+            </div>
+          </div>
+
+          <div style="display:flex; justify-style:space-between; align-items:center;">
+            <p style="font-size:0.75rem; color:#94a3b8;"><i class="fa-solid fa-circle-info"></i> Results are auto-synced with employee career development records.</p>
+            <button class="quiz-restart-btn" onclick="restartQuiz()">Retake Assessment</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function restartQuiz() {
+      currentQuestion = 0;
+      score = 0;
+      skillGapsIdentified = [];
+      strengthsIdentified = [];
+      
+      quizBody.innerHTML = `
+        <div class="quiz-question-text" id="question"></div>
+        <div class="options-grid" id="options"></div>
+        <div class="quiz-footer">
+          <div class="quiz-score-tracker" id="score">Score: 0</div>
+          <button class="quiz-next-btn" id="next-btn" onclick="nextQuestion()" disabled>Next Question</button>
+        </div>
+      `;
+      
+      window.questionEl = document.getElementById("question");
+      window.optionsEl = document.getElementById("options");
+      window.scoreEl = document.getElementById("score");
+      window.nextBtn = document.getElementById("next-btn");
+
+      loadQuestion();
+    }
+
+    loadQuestion();
+  </script>
+</body>
+</html>
